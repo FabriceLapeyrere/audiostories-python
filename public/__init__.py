@@ -161,6 +161,6 @@ class Public(object):
 		myroot.putChild('lib',File("public/lib", "application/javascript"))
 		myroot.putChild('css',File("public/css", "application/javascript"))
 		myroot.putChild('js',File("public/js", "application/javascript"))
-		myroot.putChild('img',File("public/img", "application/javascript"))
+		myroot.putChild('img',File("data/img", "application/javascript"))
 		myroot.putChild('files',File("data/files", "application/javascript"))
 		self.root=myroot			
