@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<title>#{{story.num}} - {{story.nom}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<meta property="og:title" content="{{story.nom|e}}" />
+	<meta property="og:description" content="{{story.pitch|e}}" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="{{story.url}}" />
+	<meta property="og:image" content="{{story.id}}/{{story.miniatures[story.photos.une].normal}}" />
+	<link rel="icon" href="/img/favicon.ico" />
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+	<link href="/lib/css/bootstrap.min.custom.css" media="all" type="text/css" rel="stylesheet">
+	<link href="/lib/css/jquery.modal.css" media="all" type="text/css" rel="stylesheet">
+	<link href="/css/audiostories.css" media="all" type="text/css" rel="stylesheet">
+	<style>
+		.color {opacity:1;background-image:url("{{story.id}}/files/{{story.gradient}}");background-size:100% 100%;}
+		.wrapperR2:after {padding-top:{{ratio|proportion}}%;}
+	</style>
+</head>
+<body role="application" aria-label="Audiostory numéro {{story.num}} : {{story.nom|e}}.">
+<div id="main">
+<div class='mask color'></div>
+<div class="col-xs-120 header">
+	<a href="/" aria-label="Audiostories. Retour à la page d'accueil.">
+	<div class="col-xs-60 col-xs-offset-30 col-sm-30 col-sm-offset-0 col-md-25 col-lg-20">
+		<img src="/img/logo_seul.png" class="img-responsive"/>
+	</div>
+	</a>
+    <a class="pull-right info" href="#help" rel="modal:open"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
+</div>
+<div class="col-xs-120">
+	<div class="diaporama wrapperR2" aria-hidden="true">
+		<div class="pgauche">{{'normal'|html_image_vide}}</div>
+		<div class="pdroite">{{'normal'|html_image_vide}}</div>
+        	<div class="subs">
+			<svg viewBox="0 0 350 50">
+			  <text y='40' x="50%" text-anchor="middle"></text>
+			</svg>
+		</div>
+		<div class="prev"></div>
+		<div class="next"></div>
+	</div>
+	<div class="nav-diap">
+		{% for item in story.photos.paires %}
+			<span class="nav-item cursor {% if loop.index0==0 %} ok{% else %} lazy{% endif %}"></span>
+		{% endfor %}
+	</div>
+</div>
+<div class="col-xs-120 col-lg-80 col-lg-offset-20 meta">
+	<div class="readeronly readersubs" aria-live="assertive" role="log"></div>
+	<div class="col-xs-25 col-md-16 metaD pad0 carreparent" aria-hidden="true">
+		<div class="carre play playPause">
+		</div>
+		<div class="play-mask"></div>
+		<div class="Ago"></div>
+		<div class="Bgo ok"></div>
+	</div>
+	<div class="col-xs-95 col-md-104 pad0 waveContainer" aria-hidden="true">
+		<div class="Awaveform"></div>
+		<div class="Aprogress"></div>
+		<div class="Atime"></div>
+		<div class="Bwaveform farwest"></div>
+		<div class="Bprogress farwest"></div>
+		<div class="Btime farwest"></div>
+	</div>
+	<table class="metabox pad0" aria-hidden="true">
+		<tr class="tdA">
+			<td class="colgauche col-xs-25 col-md-16 faceA ok cursor">
+				<span class="faceA-play"></span>Face A	
+			</td>
+			<td class="coldroite col-xs-95 col-md-104 faceA ok">
+				{{story.sons.A.titre}}
+			</td>
+		</tr>
+		<tr class="tdB">
+			<td class="colgauche faceB cursor">
+				<span class="faceB-play"></span>Face B	
+			</td>
+			<td class="coldroite faceB">
+				{{story.sons.B.titre}}
+			</td>
+		</tr>
+		<tr>
+			<td class="colgauche last">
+			</td>
+			<td class="coldroite last text">
+				<div class="colonnes hyphenate">{{story.infos.texte}}</div>
+				{% if story.infos.liens %}<div class="liens">{{story.infos.liens}}</div>{% endif %}
+				{% if story.infos.auteurs %}<div class="auteurs">Réalisation : {{story.infos.auteurs}}</div>{% endif %}
+			</td>
+		</tr>
+	</table>
+</div>
+<div class="col-xs-120 col-lg-80 col-lg-offset-20 egalement" aria-hidden="true">
+{% for s in stories %}
+	{% if loop.index%3==1 %}<div class='visible-md clearfix'></div>{% endif %}
+	{% if loop.index%3==1 %}<div class='visible-lg clearfix'></div>{% endif %}
+	{% if loop.index%2==1 %}<div class='visible-sm clearfix'></div>{% endif %}
+	<div class="col-xs-120 col-sm-60 col-md-40">
+		<div class="story-small">
+			<a class="astory" href="/story/{{s.id}}">
+			{% if s.une %}{{s.une.petit|html_image(s.id)}}{% endif %}
+			<div class="img-mask-p"></div>
+			</a>
+			<div class="titres">
+				<div class="col-xs-120 nom">
+				{{s.nom}} <span class="pull-right mini">#{{s.num}}</span>
+				</div>
+				<div class="col-xs-120 pitch hidden-xs hidden-sm">
+				{{s.pitch}}
+				</div>
+				<div class="clearfix"></div>
+			</div>
+ 			<div class="clearfix"></div>
+		</div>
+	</div>
+{% endfor %}
+</div>
+<div class="col-xs-120 footer" aria-hidden="true">
+	<ul>
+	{% for p in pages %}
+		<li><a href='/p/{{p.id}}'>{{p.nom}}</a></li>
+	{% endfor %}
+	</ul> 
+        <div class="clearfix"></div>
+	<div class="addedfooter">{{footer}}</div>
+	<div class="clearfix"></div>
+	<p>&nbsp;</p>
+	</div>
+	<div class="clearfix"></div>
+</div>
+<div class="clearfix"></div>
+</div>
+<div class="hidden readerinfos">La touche "espace" sert de bouton play, pause. Pour lancer la face A appuyer sur la touche "A". Pour lancer la face B appuyer sur la touche "B". Pour vous déplacer dans la piste audio appuyer sur les touches de 0 à 9. Pour lire le texte appuyez sur la touche "T". Pour les informations de navigation appuyez sur la touche "I". Pour retourner à l'accueil appuyer sur la touche "H".</div>
+<div class="hidden readertexte">Face A : {{story.sons.A.titre}}. Face B : {{story.sons.B.titre}}. {{story.infos.texte}} {% if story.infos.auteurs %}Réalisation : {{story.infos.auteurs}}.{% endif %}</div>
+<div class="readeronly status" aria-live="assertive" aria-atomic="true"></div>
+<div id="help" class="jqModal">
+<p>Cliquer sur les photos pour les faire défiler.</p>
+<p>Cliquer sur <span class="glyphicon glyphicon-play" aria-hidden="true"></span> pour écouter les sons (face A et face B)</p>
+<p>Ne pas oublier d'allumer vos enceintes.</p>
+<p>Bon visionnage.</p>
+<hr/>
+<p><small>Raccourcis clavier :</small></p>
+<table style="text-align:center;font-size:0.8em;width:100%;">
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;" width="50%">Flèche droite</td><td width="50%">Photos suivantes</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">Flèche gauche</td><td>Photos précédentes</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">A</td><td>Écouter la face A</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">B</td><td>Écouter la face B</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">Espace</td><td>Play / Pause</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">Touches de 0 à 9</td><td>Naviguer dans la piste audio</td></tr>
+</table>
+</div>
+{% if story.sons.A.file.filename %}
+<script>
+	var faceA='{{story.id}}/files/faceA/{{story.sons.A.file.filename}}';
+	var faceB='{{story.id}}/files/faceB/{{story.sons.B.file.filename}}';
+	var APeaks={{story.sons.A.peaks|tojson}};
+	var BPeaks={{story.sons.B.peaks|tojson}};
+	var Asubs={{story.sons.A.subs|tojson}};
+	var Bsubs={{story.sons.B.subs|tojson}};
+</script>
+{% endif %}
+<script>
+	var Paires=[];
+	var PairesOk=[];
+{% for p in story.photos.paires %}
+	Paires.push({gauche:'{{story.id}}/files/{{story.miniatures[p.gauche].hd}}',droite:'{{story.id}}/files/{{story.miniatures[p.droite].hd}}'});
+	PairesOk.push({gauche:'',droite:''});
+{% endfor %}
+</script>
+
+<script src="/lib/jquery-1.11.1.min.js"></script>
+<script src="/lib/jquery.tools.scrollable.min.js"></script>
+<script src="/lib/jquery.modal.min.js"></script>
+<script src="/lib/Smooth-0.1.7.js"></script>
+<script src="/lib/wavesurfer.min.js"></script>
+<script src="/lib/hyphenate.js" type="text/javascript"></script>
+<script src="/js/story.js"></script>
+</body>
+</html>

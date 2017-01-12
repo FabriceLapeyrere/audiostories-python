@@ -1,0 +1,16 @@
+<div>
+	<div class="col-xs-12 col-md-offset-2 col-md-8">
+		<p><span class="btn btn-primary" ng-click="addStoryMod()">Nouvelle Audiostory</span></p>
+		<ul class="list-group">
+			<li class="list-group-item" ng-repeat="story in Data.modele.stories | exists" ui-on-Drop="addStoryTag($event,$data,story)" drop-channel="tag">
+				<div class="col-sm-12">
+					<div class="contact-btn cursor">
+						<span class="glyphicon glyphicon-trash" ng-confirm-click="delStory(story)" ng-confirm-message="Sûr?"></span>
+					</div>
+					<a href="#/modstory/{{story.id}}">{{story.nom ? story.nom :'(sans nom)'}}</a>
+				</div>
+			<div class="clearfix"></div>					
+			</li>
+		</ul>
+	</div>
+</div>

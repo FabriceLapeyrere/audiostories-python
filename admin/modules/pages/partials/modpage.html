@@ -1,0 +1,24 @@
+<div class="col-xs-12 col-md-offset-2 col-md-8" ng-if="Data.modele.usersall[Data.modele.myid].role==2">
+<form role="form" class="new">
+<div class="col-xs-12">
+	<button class="btn btn-primary"  ng-click="modPage()" ng-disabled="b=pristine(key)">Enregistrer</button>
+	<span class="pull-right mini" ng-show="b">Enregistré</span>
+	<span class="pull-right mini" ng-show="!b">Non enregistré</span>
+</div>
+<div class="col-xs-12 clearfix inter"></div>
+<div class="col-xs-12">
+	<p><toggle-switch model="Data.modele[key].statut" knob-label="publié" class='small'></toggle-switch> <a ng-if="Data.modele[key].statut" href="../p/{{Data.modele[key].id}}">voir en ligne</a></p>
+	<label for="nom">Titre</label>
+	<input stop-propagation class="form-control" type="text" ng-model="Data.modele[key].nom"/><br />
+	<label for="desc">Descriptif long</label>
+	<textarea ckeditor="editorOptions" class="form-control" ng-model="Data.modele[key].html" rows="23"/></textarea>
+</div>
+<div class="col-xs-12 clearfix inter"></div>
+<div class="col-xs-12">
+	<button class="btn btn-primary"  ng-click="modPage()" ng-disabled="pristine(key)">Enregistrer</button>
+	<span class="pull-right mini" ng-show="b">Enregistré</span>
+	<span class="pull-right mini" ng-show="!b">Non enregistré</span>
+</div>
+</form>
+</div>
+

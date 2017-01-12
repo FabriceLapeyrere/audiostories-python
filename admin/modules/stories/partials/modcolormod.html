@@ -1,0 +1,16 @@
+<form role="form" name="form.input">
+<div class="modal-body">
+	<label for="nom">{{input.label}}</label>
+	<div>
+		<div class="col-xs-3" ng-repeat="c in input.model track by $index">
+		<input  stop-propagation class="form-control" type="color" ng-model="input.model[$index]"/>
+	</div>
+	</div>
+	<br />
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">Enregistrer</button>
+    <button class="btn btn-warning" ng-click="cancel()">Annuler</button>
+</div>
+</form>
+

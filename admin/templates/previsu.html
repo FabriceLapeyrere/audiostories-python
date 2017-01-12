@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<title>#{{story.num}} - {{story.nom}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<meta property="og:title" content="{{story.nom|e}}" />
+	<meta property="og:description" content="{{story.pitch|e}}" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="{{story.url}}" />
+	{% if story.photos.une!='' %}<meta property="og:image" content="{{story.id}}/{{story.miniatures[story.photos.une].normal}}" />{% endif %}
+	<link rel="icon" href="img/favicon.ico" />
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+	<link href="{{story.id}}/lib/css/bootstrap.min.custom.css" media="all" type="text/css" rel="stylesheet">
+	<link href="{{story.id}}/lib/css/jquery.modal.css" media="all" type="text/css" rel="stylesheet">
+	<link href="{{story.id}}/css/audiostories.css" media="all" type="text/css" rel="stylesheet">
+	<style>
+		.color {opacity:1;background-image:url("{{story.id}}/files/{{story.gradient}}");background-size:100% 100%;}
+		.wrapperR2:after {padding-top:{{ratio|proportion}}%;}
+	</style>
+</head>
+<body>
+<div id="main">
+<div class='mask color'></div>
+<div class="col-xs-120 header">
+	<a href="/">
+	<div class="col-xs-60 col-xs-offset-30 col-sm-30 col-sm-offset-0 col-md-25 col-lg-20">
+		<img src="{{story.id}}/img/logo_seul.png" class="img-responsive"/>
+	</div>
+	</a>
+</div>
+<div class="col-xs-120">
+	<div class="diaporama wrapperR2">
+		<div class="pgauche">{{'normal'|html_image_vide}}</div>
+		<div class="pdroite">{{'normal'|html_image_vide}}</div>
+        	<div class="subs">
+			<svg viewBox="0 0 350 50">
+			  <text y='40' x="50%" text-anchor="middle"></text>
+			</svg>
+		</div>
+		<div class="prev"></div>
+		<div class="next"></div>
+	</div>
+	<div class="nav-diap">
+		{% for item in story.photos.paires %}
+			<span class="nav-item cursor {% if loop.index0==0 %} ok{% else %} lazy{% endif %}"></span>
+		{% endfor %}
+	</div>
+</div>
+<div class="col-xs-120 col-lg-80 col-lg-offset-20 meta">
+	<div class="col-xs-25 col-md-16 metaD pad0 carreparent">
+		<div class="carre play playPause">
+		</div>
+		<div class="play-mask"></div>
+		<div class="Ago"></div>
+		<div class="Bgo ok"></div>
+	</div>
+	<div class="col-xs-95 col-md-104 pad0 waveContainer">
+		<div class="Awaveform"></div>
+		<div class="Aprogress"></div>
+		<div class="Atime"></div>
+		<div class="Bwaveform farwest"></div>
+		<div class="Bprogress farwest"></div>
+		<div class="Btime farwest"></div>
+	</div>
+	<table class="metabox pad0">
+		<tr class="tdA">
+			<td class="colgauche col-xs-25 col-md-16 faceA ok cursor">
+				<span class="faceA-play"></span>Face A	
+			</td>
+			<td class="coldroite col-xs-95 col-md-104 faceA ok">
+				{{story.sons.A.titre}}
+			</td>
+		</tr>
+		<tr class="tdB">
+			<td class="colgauche faceB cursor">
+				<span class="faceB-play"></span>Face B	
+			</td>
+			<td class="coldroite faceB">
+				{{story.sons.B.titre}}
+			</td>
+		</tr>
+		<tr>
+			<td class="colgauche last">
+			</td>
+			<td class="coldroite last text">
+				<div class="colonnes hyphenate">{{story.infos.texte}}</div>
+				{% if story.infos.liens %}<div class="liens">{{story.infos.liens}}</div>{% endif %}
+				{% if story.infos.auteurs %}<div class="auteurs">Réalisation : {{story.infos.auteurs}}</div>{% endif %}
+			</td>
+		</tr>
+	</table>
+</div>
+<div class="col-xs-120 col-lg-80 col-lg-offset-20 egalement">
+{% for s in stories %}
+	<div class="col-xs-120 col-md-40">
+		<div class="story-small">
+			<a class="astory" href="/story/{{s.id}}">
+			{% if s.une %}{{s.une.petit|html_image(s.id)}}{% endif %}
+			<div class="img-mask-p"></div>
+			</a>
+			<div class="titres">
+				<div class="col-sm-120 nom">
+				{{s.nom}} <span class="pull-right mini">#{{s.num}}</span>
+				</div>
+				<div class="col-md-120 pitch hidden-xs hidden-sm">
+				{{s.pitch}}
+				</div>
+				<div class="clearfix"></div>
+			</div>
+ 			<div class="clearfix"></div>
+		</div>
+	</div>
+{% endfor %}
+</div>
+<div class="col-xs-120 footer">
+	<ul>
+	{% for p in pages %}
+		<li><a href='p/{{p.id}}'>{{p.nom}}</a></li>
+	{% endfor %}
+	</ul> 
+</div>
+<div class="clearfix"></div>
+</div>
+
+{% if story.sons.A.file.filename %}
+<script>
+	var faceA='{{story.id}}/files/faceA/{{story.sons.A.file.filename}}';
+	var faceB='{{story.id}}/files/faceB/{{story.sons.B.file.filename}}';
+	var APeaks={{story.sons.A.peaks|tojson}};
+	var BPeaks={{story.sons.B.peaks|tojson}};
+	var Asubs={{story.sons.A.subs|tojson}};
+	var Bsubs={{story.sons.B.subs|tojson}};
+</script>
+{% endif %}
+<script>
+	var Paires=[];
+	var PairesOk=[];
+{% for p in story.photos.paires %}
+	Paires.push({gauche:'{{story.id}}/files/{{story.miniatures[p.gauche].hd}}',droite:'{{story.id}}/files/{{story.miniatures[p.droite].hd}}'});
+	PairesOk.push({gauche:'',droite:''});
+{% endfor %}
+</script>
+
+<script src="{{story.id}}/lib/jquery-1.11.1.min.js"></script>
+<script src="{{story.id}}/lib/jquery.tools.scrollable.min.js"></script>
+<script src="{{story.id}}/lib/jquery.modal.min.js"></script>
+<script src="{{story.id}}/lib/Smooth-0.1.7.js"></script>
+<script src="{{story.id}}/lib/wavesurfer.min.js"></script>
+<script src="{{story.id}}/lib/hyphenate.js" type="text/javascript"></script>
+<script src="{{story.id}}/js/story.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<div>
+	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+		<h3>login : {{Data.modele[key].login}}</h3>
+		<form role="form" class="new">
+			<label for="name">Nom</label>
+			<input class="form-control" type="text" ng-model="Data.modele[key].name" required autocomplete="off"/><br />
+			<label for="name">Role</label>
+			<div>
+			<div class="btn-group">
+				<label class="btn btn-primary" ng-model="Data.modele[key].role" btn-radio="1">rédacteur</label>
+				<label class="btn btn-primary" ng-model="Data.modele[key].role" btn-radio="2">rédacteur + peut publier</label>
+			</div>
+			</div>
+	    		<div class="col-xs-12 clearfix inter"></div>
+			<label for="pwd">Mot de passe :</label>
+			<p ng-if="Data.modele[key].pwd.length<4 && Data.modele[key].pwd.length>0">Le mot de passe est trop court.</p>
+			<input class="form-control" type="password" ng-model="Data.modele[key].pwd" autocomplete="off"/><br />
+			<label for="pwdcf">Confirmer le mot de passe :</label>
+			<input class="form-control" type="password" ng-model="Data.modele[key].pwdcf" autocomplete="off"/><br />
+			<button ng-if="Data.modele[key].name && ((Data.modele[key].pwd.length>=4 && Data.modele[key].pwd==Data.modele[key].pwdcf) || (!Data.modele[key].pwd && !Data.modele[key].pwdcf && (Data.modele[key].role!=Data.modeleSrv[key].role || Data.modele[key].name!=Data.modeleSrv[key].name)))" class="btn btn-primary"  ng-click="mod()">Modifier</button>
+		</form>
+		<div>
+		<h3>Groupes</h3>
+		<div>
+			<button type="button" ng-repeat-start="g in Data.modele.groups" class="btn btn-items" ng-class="{'btn-primary':g.users && g.users.indexOf(Data.modele[key].id)>=0,'btn-default':!g.users || g.users.indexOf(Data.modele[key].id)<0}" ng-click="toggle_group(g)">{{g.nom}}</button>
+			<span ng-repeat-end>&nbsp;</span>
+		</div>
+		</div>
+	</div>
+</div>

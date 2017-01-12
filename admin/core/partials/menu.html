@@ -1,0 +1,11 @@
+<div class="navbar-header">
+	<a href="#/" class="navbar-brand">{{brand}}</a>
+</div>
+<ul class="nav navbar-nav">
+	<li ng-attr-class="{{path()=='/stories' && 'active'}}"><a href="#/stories">Stories</a></li>
+	<li ng-attr-class="{{path()=='/pages' && 'active'}}"><a href="#/pages">Pages</a></li>
+	<li ng-if="logged.id==1" ng-attr-class="{{path()=='/admin' && 'active'}}"><a href="#/admin">Admin</a></li>
+	<li ng-attr-class="{{path()=='/moi' && 'active'}}"><a href="#/moi">Moi</a></li>
+	<li><a href="#" ng-click="logout()">(Déconnecter {{logged.name}})</a></li>
+</ul>
+

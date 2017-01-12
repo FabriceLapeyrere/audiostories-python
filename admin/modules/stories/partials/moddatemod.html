@@ -1,0 +1,15 @@
+<form role="form" name="form.input">
+<div class="modal-body">
+	<label for="nom">{{input.label}}</label>
+	<div style="text-align:center;">
+		<div style="display:inline-block; min-height:290px;">
+			<div datepicker datepicker-options="{'startingDay':1}" ng-model="input.model"></div>
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">Enregistrer</button>
+    <button class="btn btn-warning" ng-click="cancel()">Annuler</button>
+</div>
+</form>
+

@@ -1,0 +1,9 @@
+<div>
+	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+		<form role="form" class="new">
+			<label for="name">Nom</label>
+			<input class="form-control" type="text" ng-model="newGroup.nom" required/><br />
+			<button ng-if="newGroup.nom && !groupExists(newGroup.nom)" class="btn btn-primary"  ng-click="addGroup()">Ajouter un groupe</button>
+		</form>
+	</div>
+</div>

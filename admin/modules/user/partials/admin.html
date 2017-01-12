@@ -1,0 +1,38 @@
+<div ng-if="Data.modele.myid==1">
+	<div class="col-xs-12 col-sm-6">
+		<p><a href="#/adduser" class="btn btn-primary">Nouvel utilisateur</a></p>
+		<h3>Utilisateurs</h3>
+		<pagination ng-show="usersOk.length>itemsParPage" boundary-links="true" total-items="usersOk.length" page="currentPageU" items-per-page="itemsParPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+		<ul class="list-group">
+			<li ng-repeat="u in (usersOk=(Data.modele.users | filter:q | orderBy:'name')) | startFrom:(currentPageU-1)*itemsParPage | limitTo:itemsParPage" class="list-group-item">
+				<locked verrou="u.verrou" data="Data">
+					<a href="#/moduser/{{u.id}}">{{u.name}}</a>
+					<button ng-if="u.id!=1" ng-confirm-click="delUser(u.id)" ng-confirm-message="Sûr ?" class='btn btn-default btn-xs pull-right'>x</button>
+				</locked>
+			</li>
+		</li>
+		</ul>
+		<p>&nbsp;</p>
+		<p><a href="#/addgroup" class="btn btn-primary">Nouveau groupe</a></p>
+		<h3>Groupes</h3>
+		<pagination ng-show="groupsOk.length>itemsParPage" boundary-links="true" total-items="groupsOk.length" page="currentPageU" items-per-page="itemsParPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+		<ul class="list-group" ng-if="Data.modele.groups">
+		    <li ng-repeat="g in (groupsOk=(Data.modele.groups | orderBy:'nom')) | startFrom:(currentPageU-1)*itemsParPage | limitTo:itemsParPage" class="list-group-item">
+			<locked verrou="g.verrou" data="Data">
+				<a href="#/modgroup/{{g.id}}">{{g.nom}}</a>
+				<button ng-confirm-click="delGroup(g.id)" ng-confirm-message="Sûr ?" class='btn btn-default btn-xs pull-right'>x</button>
+			</locked>
+		    </li>
+		</ul>
+	</div>
+	<div class="col-xs-12 col-sm-6" ng-show="histOk.length>0">
+		<h3>Historique</h3>
+		<pagination ng-show="histOk.length>itemsParPage" boundary-links="true" total-items="histOk.length" page="currentPage" items-per-page="itemsParPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+		<ul class="list-group">
+			<li ng-repeat="l in (histOk=(history | filter:q | orderBy:'date':true)) | startFrom:(currentPage-1)*itemsParPage | limitTo:itemsParPage" class="list-group-item">
+				{{byId(users,l.user.id).name ? byId(users,l.user.id).name : l.user.name}}, {{calendar(l.date)}}, {{l.params.verb}} <span class="cursor" ng-click="u.show=1" ng-show="u.show!=1">+</span><span class="cursor" ng-click="u.show=0" ng-show="u.show==1">-</span><pre ng-show="u.show==1">{{dump(l.params)}}</pre>
+			</li>
+		</li>
+	</div>
+</div>
+<div ng-if="Data.modele.myid!=1"><div class="col-xs-12 col-sm-6 col-sm-offset-3">Vous ne devriez pas être là...</div></div>

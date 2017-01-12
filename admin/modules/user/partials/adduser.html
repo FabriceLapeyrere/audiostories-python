@@ -1,0 +1,17 @@
+<div>
+	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+		<form role="form" class="new">
+			<label for="name">Nom</label>
+			<input class="form-control" type="text" ng-model="newUser.name" required/><br />
+			<label for="name">Login</label>
+			<p ng-if="loginExists(newUser.login)">Ce login existe déjà.</p>
+			<input class="form-control" type="text" ng-model="newUser.login" required/><br />
+			<label for="pwd">Mot de passe :</label>
+			<p ng-if="newUser.pwd.length<4">Le mot de passe est trop court.</p>
+			<input class="form-control" type="password" ng-model="newUser.pwd" required/><br />
+			<label for="pwdcf">Confirmer le mot de passe :</label>
+			<input class="form-control" type="password" ng-model="newUser.pwdcf" required/><br />
+			<button ng-if="newUser.name!='' && newUser.pwd.length>=4 && newUser.pwd==newUser.pwdcf && !loginExists(newUser.login)" class="btn btn-primary"  ng-click="addUser()">Ajouter un utilisateur</button>
+		</form>
+	</div>
+</div>

@@ -1,0 +1,15 @@
+<div ui-on-Drop="dropOnTag($event,$data,$channel,tag,$ctrl)" drop-channel="tag,panier">
+	<span ng-if="hasChild(tag)" class="cursor petit">
+		<span class="glyphicon glyphicon-minus" ng-if="tagsOpen.indexOf(tag.id)>=0" ng-click="tagsOpen.splice(tagsOpen.indexOf(tag.id),1)"></span>
+		<span class="glyphicon glyphicon-plus" ng-if="tagsOpen.indexOf(tag.id)==-1" ng-click="tagsOpen.push(tag.id)"></span>
+	</span>
+	<span ui-draggable="true" drag="tag" drag-channel="tag" style="color:{{tag.color}};">{{tag.nom}}</span> 
+	<small class="cursor" ng-click="modTagMod(tag)">modifier</small>
+	<small ng-if="vs.casquettes.filtre.q.tags.indexOf(tag.id)==-1" class="cursor" ng-click="voir(tag.id)">voir</small>
+	<small ng-if="vs.casquettes.filtre.q.tags.indexOf(tag.id)!=-1" class="cursor" ng-click="voir(tag.id)"><b>voir</b></small>
+</div>
+<ul ng-if="hasChild(tag) && tagsOpen.indexOf(tag.id)>=0"class="list-group">
+<li class="list-group-item tag-list" ng-include="'partials/inc/tagSub.html'" ng-repeat="tag in tags | filter:isChild(tag) | orderBy:'nom'"></li>
+</ul>
+<div ng-if="tag.id_parent==0" class="racine" ui-on-Drop="moveTag($event,$data,{id_parent:0,id:0})" drop-channel="'tag'"></div>
+

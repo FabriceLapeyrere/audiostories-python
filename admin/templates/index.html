@@ -1,0 +1,83 @@
+<html ng-app="audiostories" ng-controller="mainCtl">
+<head>
+<title>{{ brand }}</title>
+<base href="/admin/">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<link rel="icon" href="{{ favicon }}" />
+<link href="lib/css/bootstrap.min.css" media="all" type="text/css" rel="stylesheet">
+<link href="lib/css/angular-motion.min.css" media="all" type="text/css" rel="stylesheet">
+<link href="lib/css/bootstrap-switch.css" media="all" type="text/css" rel="stylesheet">
+<link href="lib/css/hotkeys.css" media="all" type="text/css" rel="stylesheet">
+<link href="css/audiostories.css" media="all" type="text/css" rel="stylesheet">
+<link href="lib/css/cssreset-context-min.css" rel="stylesheet" type="text/css">
+<link href="lib/css/cssbase-context-min.css" rel="stylesheet" type="text/css">
+<style>
+	.wrapperR:after {
+		padding-top:{{ ratio }}%; /*ratio*/
+	}
+</style>
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/admin">{{ brand }}</a>
+      </div>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+	{% raw %}<li ng-attr-class="{{path()=='/stories' && 'active'}}"><a href="#/stories">Stories</a></li>{% endraw %}
+	{% raw %}<li ng-attr-class="{{path()=='/pages' && 'active'}}" ng-if="Data.modele.usersall[Data.modele.myid].role==2"><a href="#/pages">Pages</a></li>{% endraw %}
+        {% if user_id==1 %}
+	{% raw %}<li ng-attr-class="{{path()=='/admin' && 'active'}}"><a href="#/admin">Admin</a></li>{% endraw %}
+        {% endif %}
+	{% raw %}<li ng-attr-class="{{path()=='/moi' && 'active'}}"><a href="#/moi">Moi</a></li>{% endraw %}
+        </ul>
+
+        <p class="navbar-text pull-right">
+          {% if user_name %}
+          Logged in as <strong>{{ user_name }}</strong>.
+          <a ng-click="logout()" href="#" rel="nofollow">Log Out</a>
+          {% else %}
+          <a data-method="delete" href="/admin/login" rel="nofollow">Log In</a>
+          {% endif %}
+        </p>
+
+      </div>
+    </div>
+  </nav>
+<div ng-view></div>
+<script src="lib/jquery-1.11.1.min.js"></script>
+<script src="lib/angular.min.js"></script>
+<script src="lib/angular-route.min.js"></script>
+<script src="lib/angular-resource.min.js"></script>
+<script src="lib/ui-bootstrap-tpls-0.10.0.min.js"></script>
+<script src="lib/angular-sanitize.min.js"></script>
+<script src="lib/angular-file-upload.min.js"></script>
+<script src="lib/draganddrop.js"></script>
+<script src="lib/autofill-event.js"></script>
+<script src="lib/angular-toggle-switch.min.js"></script>
+<script src="lib/moment-with-langs.js"></script>
+<script src="lib/hotkeys.js"></script>
+<script src="lib/ckeditor/ckeditor.js"></script>
+<script src="lib/ng-ckeditor.js"></script>
+<script src="lib/mousewheel.js"></script>
+<script src="lib/hamster.js"></script>
+<script src="lib/load-image.js"></script>
+<script src="lib/color-thief.js"></script>
+<script src="lib/keysort.js"></script>
+<script src="lib/angular-websocket.js"></script>
+<script src="lib/Smooth-0.1.7.js"></script>
+<script src="lib/wavesurfer.min.js"></script>
+<script src="js/ws.js"></script>
+<script src="js/audiostories.js"></script>
+<script src="js/directives.js"></script>
+</body>
+</html>

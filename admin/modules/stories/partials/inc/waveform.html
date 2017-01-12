@@ -1,0 +1,20 @@
+<div class="main-waveform">
+	<div class='control'>
+		<span ng-class="{'glyphicon-pause': wavesurfer.isPlaying, 'glyphicon-play': !wavesurfer.isPlaying }" class='pp cursor glyphicon' ng-click='playpause()'></span>
+	</div>
+	<div class='sub'>{{txts.subtext}}</div>
+	<div class="rail" msd-wheel="modzoom($event, $delta)">
+		<div class="tiroir">
+			<div class='waveform'></div>
+			<div class="srt">
+				<div class="marks">
+					<div ng-if="marks.d>=0" class="d" style="position:absolute;height:100%;left:{{(100*marks.d/wavesurfer.getDuration())+'%'}};width:1px;"></div>
+					<div ng-if="marks.f>=0" class="f" style="position:absolute;height:100%;left:{{(100*marks.f/wavesurfer.getDuration())+'%'}};width:1px;"></div>
+				</div>
+				<div ng-repeat="s in srt[lang]" class="st" style="position:absolute;height:100%;left:{{(100*s.start/s.duration)}}%;width:{{(100*(s.end-s.start)/s.duration)}}%;" ><locked verrou="s.verrou" data="data"><div class="modsub cursor" ng-click="controlSub(s.uuid,$event)"></div></locked></div>
+			</div>
+		</div>
+	</div>
+	<div><span class='time'>{{txts.clock}}</span> <span class='plus cursor clair' ng-click='zoomin()'><b>zoom in</b></span> <span class='moins cursor clair' ng-click='zoomout()'><b>zoom out</b></span> | <span class="cursor" ng-class="{'clair':l!=lang}" ng-repeat="(l, subs) in srt">{{l}} </span> <span class="cursor" ng-click="addlangmod()">+</span></div> 
+</div>
+

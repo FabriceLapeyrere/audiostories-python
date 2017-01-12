@@ -1,0 +1,17 @@
+<div>
+	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+		<h3>login : {{u.login}}</h3>
+		<form role="form" class="new">
+			<label for="name">Nom</label>
+			<input class="form-control" type="text" ng-model="u.name" required autocomplete="off"/><br />
+			<label for="pwd">Mot de passe :</label>
+			<p ng-if="u.pwd.length<4 && u.pwd.length>0">Le mot de passe est trop court.</p>
+			<input class="form-control" type="password" ng-model="u.pwd" autocomplete="off"/><br />
+			<label for="pwdcf">Confirmer le mot de passe :</label>
+			<input class="form-control" type="password" ng-model="u.pwdcf" autocomplete="off"/><br />
+			<button ng-if="u.name!='' && (u.pwd.length>=4 && u.pwd==u.pwdcf || !u.pwd && !u.pwdcf)" class="btn btn-primary"  ng-click="mod()">Modifier</button>
+		</form>
+		<p class="gris">Groupes : <span class="group" ng-repeat="g in Data.modele.groups" ng-if="g.users.indexOf(Data.modele.myid)>=0"><b>{{g.nom}}</b></span></p>
+		<div class="col-xs-12 clearfix inter"></div>
+	</div>
+</div>

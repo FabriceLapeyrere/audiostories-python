@@ -1,0 +1,16 @@
+<div class="col-xs-12 col-md-offset-2 col-md-8" ng-if="Data.modele.usersall[Data.modele.myid].role==2">
+	<p><span class="btn btn-primary" ng-click="addPageMod()">Nouvelle Page</span></p>
+	<ul class="list-group">
+		<li class="list-group-item" ng-repeat="page in Data.modele.pages">
+ 	           <locked verrou="page.verrou" data="Data">
+			<div class="col-sm-12">
+				<div class="contact-btn cursor">
+					<span class="glyphicon glyphicon-trash" ng-confirm-click="delPage(page)" ng-confirm-message="Sûr?"></span>
+				</div>
+				<a href="#/modpage/{{page.id}}">{{page.nom ? page.nom :'(sans nom)'}}</a>
+			</div>
+			<div class="clearfix"></div>					
+	            </locked>
+		</li>
+	</ul>
+</div>
