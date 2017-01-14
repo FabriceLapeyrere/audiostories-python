@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-	<title>#{{story.num}} - {{story.nom}}</title>
+	<title>{{story.nom}}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta charset="UTF-8">
 	<meta property="og:title" content="{{story.nom|e}}" />
@@ -95,13 +95,13 @@
 {% for s in stories %}
 	<div class="col-xs-120 col-md-40">
 		<div class="story-small">
-			<a class="astory" href="/story/{{s.id}}">
+			<a class="astory" href="/admin/previsu/{{s.id}}">
 			{% if s.une %}{{s.une.petit|html_image(s.id)}}{% endif %}
 			<div class="img-mask-p"></div>
 			</a>
 			<div class="titres">
 				<div class="col-sm-120 nom">
-				{{s.nom}} <span class="pull-right mini">#{{s.num}}</span>
+				{{s.nom}}
 				</div>
 				<div class="col-md-120 pitch hidden-xs hidden-sm">
 				{{s.pitch}}
@@ -112,13 +112,6 @@
 		</div>
 	</div>
 {% endfor %}
-</div>
-<div class="col-xs-120 footer">
-	<ul>
-	{% for p in pages %}
-		<li><a href='p/{{p.id}}'>{{p.nom}}</a></li>
-	{% endfor %}
-	</ul> 
 </div>
 <div class="clearfix"></div>
 </div>

@@ -59,12 +59,14 @@ class Previsuid(Resource):
 		self.iduser = iduser
 	def render_GET(self, request):
 		S=Stories()
-		S.get_story(self.idstory,self.iduser).addCallback(self._delayedRender,request)
+		dl = defer.DeferredList([S.get_story(self.idstory,self.iduser), S.get_stories(self.iduser)])
+		dl.addCallback(self._delayedRender,request)
 		return NOT_DONE_YET
 	def _delayedRender(self, res, request):
-		if 'id' in res:
+		if 'id' in res[0][1]:
 			ctx = {}
-			ctx['story'] = res
+			ctx['story'] = res[0][1]
+			ctx['stories'] = res[1][1]
 			ctx['ratio'] = conf['ratio']
 			ctx['pages'] = []
 			template = env.get_template("previsu.html")
