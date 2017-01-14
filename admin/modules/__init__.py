@@ -89,7 +89,7 @@ def gets(tab,res,iduser):
 	if tab[0]=="page":
 		res=Pages().get_page(tab[1],iduser)
 	if tab[0]=="constantes":
-		res=constantes.data
+		res=constantes.data.copy()
 	return res
 def deps(tab,res):
 	if tab[0]=="group":

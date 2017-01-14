@@ -824,13 +824,13 @@ app.controller('addConstanteCtl', ['$scope', '$http', '$location', '$routeParams
 }]);
 app.controller('modConstanteCtl', ['$scope', '$http', '$location', '$routeParams', 'Data', 'Link', function ($scope, $http, $location, $routeParams, Data, Link) {
 	$scope.k=$routeParams.id;
-	$scope.data=Data;
+	$scope.v= typeof Data.modele.constantes[$scope.k] === "string" ? Data.modele.constantes[$scope.k] : JSON.stringify(Data.modele.constantes[$scope.k],null,4);
 	$scope.mod=function(){
 		var data={
 			action:'modConstante',
 			params:{
 				k:$scope.k,
-				v:Data.modele.constantes[$scope.k]
+				v:$scope.v
 			}
 		};
 		Link.ajax(data,function(data){

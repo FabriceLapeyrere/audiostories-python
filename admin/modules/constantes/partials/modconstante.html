@@ -4,8 +4,8 @@
 			<label for="name">Nom</label>
 			<input class="form-control" type="text" ng-model="k" disabled/><br />
 			<label for="name">Valeur</label>
-			<input class="form-control" type="text" ng-model="Data.modele.constantes[k]" required/><br />
-			<button ng-if="c.v!=''" class="btn btn-primary"  ng-click="mod()">Modifier la constante</button>
+			<textarea rows="10" class="form-control" ng-model="v" required/><br />
+			<button ng-if="v!=''" class="btn btn-primary"  ng-click="mod()">Modifier la constante</button>
 		</form>
 	</div>
 </div>

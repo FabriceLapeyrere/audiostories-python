@@ -19,14 +19,22 @@ def commit():
 	
 def addc(k,v,iduser):
 	if iduser==1:
+		try:
+			value=json.loads(v)
+		except:
+			value=v
 		if k not in this.data:
-			this.data[k]=v
+			this.data[k]=value
 			this.commit()
 			admin.wsrouter.maj(["constantes"],k,iduser)
 def modc(k,v,iduser):
 	if iduser==1:
+		try:
+			value=json.loads(v)
+		except:
+			value=v
 		if k in this.data:
-			this.data[k]=v
+			this.data[k]=value
 			this.commit()
 			admin.wsrouter.maj(["constantes"],k,iduser)
 def delc(k,iduser):
