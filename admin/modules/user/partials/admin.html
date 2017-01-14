@@ -25,6 +25,16 @@
 		    </li>
 		</ul>
 	</div>
+	<div class="col-xs-12 col-sm-6" ng-show="Data.modele.constantes">
+		<p><a href="#/addconstante" class="btn btn-primary">Nouvelle constante</a></p>
+		<h3>Constantes</h3>
+		<ul class="list-group">
+			<li ng-repeat="(k, v) in Data.modele.constantes" class="list-group-item">
+				<a href="#/modconstante/{{k}}"><b>{{k}}</b></a> : {{v}}
+				<button ng-if="['brand','lang','ratio'].indexOf(k) < 0" ng-confirm-click="delConstante(k)" ng-confirm-message="Sûr ?" class='btn btn-default btn-xs pull-right'>x</button>
+			</li>
+		</ul>
+	</div>
 	<div class="col-xs-12 col-sm-6" ng-show="histOk.length>0">
 		<h3>Historique</h3>
 		<pagination ng-show="histOk.length>itemsParPage" boundary-links="true" total-items="histOk.length" page="currentPage" items-per-page="itemsParPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>

@@ -1,6 +1,7 @@
 from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
 from twisted.web.server import Session
 import json, admin, config, Cookie
+from admin.modules import constantes
 from router import LinkRouter
 class LinkServerProtocol(WebSocketServerProtocol):
 	def onConnect(self, request):
@@ -47,7 +48,7 @@ class LinkServerFactory(WebSocketServerFactory):
 			admin.logged[uid]['peers'].append(peer)
 			admin.peers[peer]={'uid':uid,'userid':admin.logged[uid]['userid']}
 			admin.subs[peer]={'userid':admin.logged[uid]['userid'],'contexts':[]}
-		self.broadcast({'type':'modele','collection':{'logged':admin.logged,'peers':admin.peers,'config':config.conf}})
+		self.broadcast({'type':'modele','collection':{'logged':admin.logged,'peers':admin.peers,'config':config.conf,'constantes':constantes.data}})
 
 
 	def unregister(self, client):
@@ -63,7 +64,7 @@ class LinkServerFactory(WebSocketServerFactory):
 				if peer in admin.logged[i]['peers']:
 					admin.logged[i]['peers'].remove(peer)
 			del admin.subs[peer]
-		self.broadcast({'type':'modele','collection':{'logged':admin.logged,'peers':admin.peers,'config':config.conf}})
+		self.broadcast({'type':'modele','collection':{'logged':admin.logged,'peers':admin.peers,'config':config.conf,'constantes':constantes.data}})
 	def broadcast(self, m):
 		msg=json.dumps(m)
 		print("broadcasting message...")
@@ -76,6 +77,7 @@ class LinkServerFactory(WebSocketServerFactory):
 		modele['peers']=admin.peers
 		modele['logged']=admin.logged
 		modele['config']=config.conf
+		modele['constantes']=constantes.data
 		m={'type':'modele','collection':modele}
 		msg=json.dumps(m)
 		for p,c in self.clients.items():

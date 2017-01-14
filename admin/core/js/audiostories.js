@@ -28,7 +28,7 @@ app.config(['$routeProvider', function($routeProvider) {
 	//stories
 	$routeProvider.when('/stories', {templateUrl: 'stories_partials/stories.html', controller: 'storiesCtl'});
 	$routeProvider.when('/modstory/:id', {templateUrl: 'stories_partials/modstory.html', controller: 'modstoryCtl'});
-	//stories
+	//pages
 	$routeProvider.when('/pages', {templateUrl: 'pages_partials/pages.html', controller: 'pagesCtl'});
 	$routeProvider.when('/modpage/:id', {templateUrl: 'pages_partials/modpage.html', controller: 'modpageCtl'});
 	//admin
@@ -36,6 +36,8 @@ app.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/adduser', {templateUrl: 'user_partials/adduser.html', controller: 'addUserCtl'});
 	$routeProvider.when('/modgroup/:id', {templateUrl: 'user_partials/modgroup.html', controller: 'modGroupCtl'});
 	$routeProvider.when('/addgroup', {templateUrl: 'user_partials/addgroup.html', controller: 'addGroupCtl'});
+	$routeProvider.when('/modconstante/:id', {templateUrl: 'constantes_partials/modconstante.html', controller: 'modConstanteCtl'});
+	$routeProvider.when('/addconstante', {templateUrl: 'constantes_partials/addconstante.html', controller: 'addConstanteCtl'});
 	$routeProvider.when('/admin', {templateUrl: 'user_partials/admin.html', controller: 'adminCtl'});
 	$routeProvider.when('/moi', {templateUrl: 'user_partials/me.html', controller: 'moiCtl'});
 	$routeProvider.otherwise({redirectTo: '/stories'});
@@ -804,6 +806,37 @@ app.controller('modGroupCtl', ['$scope', '$http', '$location', '$routeParams', '
 	$scope.$on("$destroy", function(){
 		Link.del_verrou([$scope.key]);
 	});
+}]);
+app.controller('addConstanteCtl', ['$scope', '$http', '$location', '$routeParams', 'Data', function ($scope, $http, $location, $routeParams, Data) {
+	$scope.c={k:'',v:''}
+	$scope.mod=function(){
+		var data={
+			action:'addConstante',
+			params:{
+				id:$scope.c.k,
+				v:$scope.c.v
+			}
+		};
+		Link.ajax(data,function(data){
+			$location.path('/admin');
+		});
+	};
+}]);
+app.controller('modConstanteCtl', ['$scope', '$http', '$location', '$routeParams', 'Data', 'Link', function ($scope, $http, $location, $routeParams, Data, Link) {
+	$scope.k=$routeParams.id;
+	$scope.data=Data;
+	$scope.mod=function(){
+		var data={
+			action:'modConstante',
+			params:{
+				k:$scope.k,
+				v:Data.modele.constantes[$scope.k]
+			}
+		};
+		Link.ajax(data,function(data){
+			$location.path('/admin');
+		});
+	};
 }]);
 app.controller('addStoryModCtl', ['$scope', '$modalInstance', '$modal', 'story', function ($scope, $modalInstance, $modal, story) {
 	$scope.story=story;

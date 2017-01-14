@@ -1,0 +1,12 @@
+<div>
+	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+		<form role="form" class="new">
+			<label for="name">Nom</label>
+			<input class="form-control" type="text" ng-model="c.k" required/><br />
+			<p ng-if="keyExists(c.k)">Cette constante existe déjà.</p>
+			<label for="name">Valeur</label>
+			<input class="form-control" type="text" ng-model="c.v" required/><br />
+			<button ng-if="c.k!='' && c.v!=''" class="btn btn-primary"  ng-click="addConstante()">Ajouter une constante</button>
+		</form>
+	</div>
+</div>

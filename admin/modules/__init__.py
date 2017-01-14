@@ -2,6 +2,7 @@ from twisted.internet import defer
 from user import User
 from stories import Stories
 from pages import Pages
+import constantes
 
 def actions(a,p,iduser):
 	if a=="addAcl":
@@ -61,6 +62,12 @@ def actions(a,p,iduser):
 	if a=="delFile":
 		s=Stories()
 		return defer.maybeDeferred(lambda: s.del_file(p,iduser))
+	if a=="addConstante":
+		return defer.maybeDeferred(lambda: constantes.addc(p['k'],p['v'],iduser))
+	if a=="delConstante":
+		return defer.maybeDeferred(lambda: constantes.delc(p['k'],iduser))
+	if a=="modConstante":
+		return defer.maybeDeferred(lambda: constantes.modc(p['k'],p['v'],iduser))
 	return defer.maybeDeferred(lambda: 'no action match')
 def gets(tab,res,iduser):
 	if tab[0]=="group":
@@ -81,6 +88,8 @@ def gets(tab,res,iduser):
 		res=Pages().get_pages(iduser)
 	if tab[0]=="page":
 		res=Pages().get_page(tab[1],iduser)
+	if tab[0]=="constantes":
+		res=constantes.data
 	return res
 def deps(tab,res):
 	if tab[0]=="group":
