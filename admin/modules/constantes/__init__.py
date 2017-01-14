@@ -1,4 +1,4 @@
-import os, json, sys
+import os, json, sys, admin
 this = sys.modules[__name__]
 this.data={}
 if not os.path.exists('data'):
@@ -17,18 +17,22 @@ def commit():
 	f.write(json.dumps(this.data))
 	f.close()
 	
-def addc(k,v,id_user):
-	if id_user==1:
+def addc(k,v,iduser):
+	if iduser==1:
 		if k not in this.data:
 			this.data[k]=v
-			self.commit()
-def modc(k,v,id_user):
-	if id_user==1:
+			this.commit()
+			admin.wsrouter.maj(["constantes"],k,iduser)
+def modc(k,v,iduser):
+	if iduser==1:
 		if k in this.data:
 			this.data[k]=v
-			self.commit()
-def delc(k,id_user):
-	if id_user==1:
+			this.commit()
+			admin.wsrouter.maj(["constantes"],k,iduser)
+def delc(k,iduser):
+	if iduser==1:
 		if k in this.data:
 			del this.data[k]
-			self.commit()
+			this.commit()
+			admin.wsrouter.maj(["constantes"],k,iduser)
+

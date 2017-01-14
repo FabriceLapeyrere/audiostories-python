@@ -66,15 +66,17 @@ myws.factory('Link',['Data', '$websocket', '$window', '$http', function(Data, $w
 	link.context=function(contexts,verrous){
 		//console.log("update_contexts");
 		Data.contexts=contexts;
-		var haschat=false, hasusers=false, hasusersall=false;
+		var haschat=false, hasconstantes=false, hasusers=false, hasusersall=false;
 		for(var i=0;i<contexts.length;i++){
 			if (contexts[i].type=='users') hasusers=true;
+			if (contexts[i].type=='constantes') hasconstantes=true;
 			if (contexts[i].type=='usersall') hasusersall=true;
 			if (!contexts[i].params) contexts[i].params={};
 		}
 		if (!haschat) Data.contexts.push({type:'chat',params:{}});
 		if (!hasusers) Data.contexts.push({type:'users',params:{}});
 		if (!hasusersall) Data.contexts.push({type:'usersall',params:{}});
+		if (!hasconstantes) Data.contexts.push({type:'constantes',params:{}});
 		var actions=[{action:'update_contexts', contexts:Data.contexts}];
 		if (verrous) {
 			for(var i=0;i<verrous.length;i++){
