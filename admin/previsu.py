@@ -37,18 +37,15 @@ class Previsu(Resource):
 	isLeaf = False
 	def getChild(self, name, request):
 		user = current_user(request)
-		if name == '' or 'login' not in user:
-			return self
-		else:
-			idstory=int(name)
-			iduser=user['uid']
-			s=Previsuid(idstory,iduser)
-			s.putChild('lib',File("public/lib", "application/javascript"))
-			s.putChild('css',File("public/css", "application/javascript"))
-			s.putChild('js',File("public/js", "application/javascript"))
-			s.putChild('img',File("public/img", "application/javascript"))
-			s.putChild('files',File("data/files/story/%s" % (idstory), "application/javascript"))
-			return s
+		idstory=int(name)
+		iduser=user['uid']
+		s=Previsuid(idstory,iduser)
+		s.putChild('lib',File("public/lib", "application/javascript"))
+		s.putChild('css',File("public/css", "application/javascript"))
+		s.putChild('js',File("public/js", "application/javascript"))
+		s.putChild('img',File("public/img", "application/javascript"))
+		s.putChild('files',File("data/files/story/%s" % (idstory), "application/javascript"))
+		return s
 	def render_GET(self, request):
 		return redirectTo('/admin', request)
 class Previsuid(Resource):

@@ -9,7 +9,7 @@
 	<meta property="og:type" content="article" />
 	<meta property="og:url" content="{{story.url}}" />
 	{% if story.photos.une!='' %}<meta property="og:image" content="{{story.id}}/{{story.miniatures[story.photos.une].normal}}" />{% endif %}
-	<link rel="icon" href="img/favicon.ico" />
+	<link rel="icon" href="{{story.id}}/img/favicon.ico" />
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
 	<link href="{{story.id}}/lib/css/bootstrap.min.custom.css" media="all" type="text/css" rel="stylesheet">
 	<link href="{{story.id}}/lib/css/jquery.modal.css" media="all" type="text/css" rel="stylesheet">
@@ -103,7 +103,7 @@
 				<div class="col-sm-120 nom">
 				{{s.nom}}
 				</div>
-				<div class="col-md-120 pitch hidden-xs hidden-sm">
+				<div class="col-md-120 pitch">
 				{{s.pitch}}
 				</div>
 				<div class="clearfix"></div>

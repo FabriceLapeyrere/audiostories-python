@@ -17,14 +17,6 @@ import cgi
 import random
 import hashlib
 
-from twisted.internet.defer import succeed, fail
-from twisted.cred.error import UnauthorizedLogin
-from twisted.cred.credentials import IUsernamePassword
-from twisted.cred.checkers import ICredentialsChecker
-from twisted.cred.portal import IRealm, Portal
-from twisted.web.resource import IResource
-from twisted.web.guard import BasicCredentialFactory, HTTPAuthSessionWrapper
-
 from twisted.web.server import Site, NOT_DONE_YET
 from twisted.web import static
 from twisted.web.resource import Resource
@@ -85,10 +77,8 @@ def require_login(request):
 
 	session = request.getSession()
 	avatar = IAvatarSessionData(session)
-	avatar.urlref = urlref
-
 	print "DOING REDIRECT"
-	request.redirect("/admin/login")
+	request.redirect("/admin/login?_urlref=%s" % urlref)
 	request.finish()
 	return NOT_DONE_YET
 
@@ -107,10 +97,15 @@ class LoginPage(Resource):
 	def render_GET(self, request):
 		session = request.getSession()
 		avatar = IAvatarSessionData(session)
-		avatar.csrf = str(random.randint(0, 1000000))
-
+		if avatar.csrf=="":
+			avatar.csrf = str(random.randint(0, 1000000))
+		if "_urlref" in request.args:
+			urlref=cgi.escape(request.args["_urlref"][0],)
+		else :
+			urlref="/admin/stories"
 		ctx = {
 			'brand' : config.conf['brand'],
+			'_urlref' : urlref,
 			'_csrf' : avatar.csrf
 			}
 		template = env.get_template("login_greeting.html")
@@ -121,7 +116,7 @@ class LoginPage(Resource):
 	# The following section implements the callback chain for login database query
 	#
 
-	def onResult(self, dbdata, request, login, password):
+	def onResult(self, dbdata, request, login, password, urlref):
 
 		log.msg("On Result:%s %s %s" % (dbdata, login, password))
 
@@ -150,17 +145,9 @@ class LoginPage(Resource):
 			avatar.prefs = dbUserPrefs
 			admin.logged[session.uid]={'userid':dbUserUid, 'peers':[]}
 			log.msg("AVATAR uid : %s" % session.uid)
-			# retrieve from session and reset
-			urlref = avatar.urlref
-			avatar.urlref = ""
-
-			if urlref:
-				request.redirect(urlref)
-				request.finish()
-			else:
-				request.redirect("/admin/")
-				request.finish()
-
+			
+			request.redirect(urlref)
+			request.finish()
 			pass
 
 		else:
@@ -179,7 +166,8 @@ class LoginPage(Resource):
 		login = cgi.escape(request.args["login"][0],)
 		password = cgi.escape(request.args["password"][0],)
 		csrf = cgi.escape(request.args["_csrf"][0],)
-
+		urlref = cgi.escape(request.args["_urlref"][0],)
+		
 		log.msg("POST csrf:%s login:%s password:%s" % (csrf, login, password))
 
 		if csrf != avatar.csrf:
@@ -191,21 +179,45 @@ class LoginPage(Resource):
 
 		# Run the query
 		d = self.connexion.runQuery("SELECT login, password, name, id, prefs from users WHERE login = ? and active = 1 LIMIT 1", (login,))
-		d.addCallback(self.onResult, request, login, password)
+		d.addCallback(self.onResult, request, login, password, urlref)
 
 		return NOT_DONE_YET
 
 
+class Protected(Resource):
+	def __init__(self,resource):
+		Resource.__init__(self)
+		self.resource=resource
+
+	def render_GET(self, request):
+		user = current_user(request)
+		if not user['login']:
+			return require_login(request)
+		return self.resource.render_GET(request)
+	def render_POST(self, request):
+		user = current_user(request)
+		if not user['login']:
+			return require_login(request)
+		return self.resource.render_POST(request)
+	def getChild(self, path, request):
+		user = current_user(request)
+		if not user['login']:
+			return self
+		return self.resource.getChild(path, request)
+			
+		
 class LogoutPage(Resource):
 
 	def render_GET(self, request):
 		session=request.getSession()
 		request.getSession().expire()
-
-		ctx = {
-			}
+		print(request.args)
+		if 'url' in request.args:
+			request.redirect(request.args['url'][0])
+			request.finish()
+			return NOT_DONE_YET	
+		ctx = {}
 		template = env.get_template("logout_greeting.html")
-
 		return str(template.render(ctx).encode('utf-8'))
 
 #
@@ -217,18 +229,13 @@ class IndexPage(Resource):
 	
 	isLeaf = True
 
-	def __init__(self, ctx):
-		self.ctx = ctx
+	def __init__(self):
 		Resource.__init__(self)
 
 	def render_GET(self, request):
 		user = current_user(request)
-		if not user['login']:
-			# this should store the current path, render the login page, and finally redirect back here
-			return require_login(request)
-		print('OK')
 		# add the user to the context
-		ctx = self.ctx.copy()
+		ctx = {}
 		ctx['brand'] = config.conf['brand']
 		ctx['ratio'] = 100/config.conf['ratio']
 		ctx['user_name'] = user['name']
@@ -248,48 +255,18 @@ class RootPage(Resource):
 		request.redirect("/admin/index")
 		request.finish()
 		return NOT_DONE_YET
+	def getChild(self, path, request):
+		if path in ["","stories","admin","pages","moi","addpage","adduser","addgroup"]:
+			return Protected(IndexPage())
+		if path in ["modpage","modstory","moduser","modgroup"]:
+			return AngularRoute()
+		return self
+class AngularRoute(Resource):
+	def render_GET(self, request):
+		log.msg("ROOT REDIRECT")
+		request.redirect("/admin/index")
+		request.finish()
+		return NOT_DONE_YET
+	def getChild(self, path, request):
+		return Protected(IndexPage())			
 
-
-class PublicHTMLRealm(object):
-	implements(IRealm)
-
-	def __init__(self, resource):
-		self._resource = resource
-
-	def requestAvatar(self, avatarId, mind, *interfaces):
-		if IResource in interfaces:
-			return (IResource, self._resource, lambda: None)
-		raise NotImplementedError()
-
-
-class DBCredentialChecker(object):
-	implements(ICredentialsChecker)
-	credentialInterfaces = (IUsernamePassword,)
-
-	def requestAvatarId(self, credentials):
-		log.msg("CHECK LOGIN login:%s password:%s" % (credentials.csrf, credentials.login, credentials.password))
-		d = self.connexion.runQuery("SELECT login, password, name, id, prefs from users WHERE login = ? and active = 1 LIMIT 1", (login,))
-		d.addCallback(self.onResult, credentials.login, credentials.password)
-	def onResult(self,res,login,password):
-		log.msg("On Result:%s %s %s" % (dbdata, login, password))
-		success = False
-		if len(dbdata) != 0:
-			dbUserPassword = dbdata[0]['password']
-			if hashlib.md5(password).hexdigest() == dbUserPassword:
-				success = True
-
-		if success:
-			return succeed(login)
-		else:
-			return fail(UnauthorizedLogin("Invalid username or password"))
-
-
-def wrap_with_auth(resource, passwords, realm="Auth"):
-	"""
-	@param resource: resource to protect
-	@param passwords: a dict-like object mapping usernames to passwords
-	"""
-	portal = Portal(PublicHTMLRealm(resource),
-		    [PasswordDictCredentialChecker(passwords)])
-	credentialFactory = BasicCredentialFactory(realm)
-	return HTTPAuthSessionWrapper(portal, [credentialFactory])

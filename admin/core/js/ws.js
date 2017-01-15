@@ -11,7 +11,7 @@ myws.value('Data', {
 	locked:false,
 	logged:false
 });
-myws.factory('Link',['Data', '$websocket', '$window', '$http', function(Data, $websocket, $window, $http) {
+myws.factory('Link',['Data', '$websocket', '$window', '$http', '$location', function(Data, $websocket, $window, $http, $location) {
 	var link={};
 	
 	var loc = $window.location, new_uri, ws;
@@ -33,14 +33,14 @@ myws.factory('Link',['Data', '$websocket', '$window', '$http', function(Data, $w
 			});
 		}
 		if (res.type=="logout") {
-			$window.location="/admin/logout";
+			$window.location="/admin" + $location.url();
 		}
 	});
 	ws.onError(function(event) {
 		console.log('connection Error', event);
 	});
 	ws.onClose(function(event) {
-		$window.location="/admin/index";
+		$window.location="/admin" + $location.url();
 		console.log('connection closed', event);
 	});
 	ws.onOpen(function() {
