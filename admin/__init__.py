@@ -3,7 +3,7 @@ from twisted.python import log
 from twisted.web.resource import IResource, Resource
 from twisted.web.static import File
 from twisted.web import rewrite
-from login import IndexPage, LoginPage, LogoutPage, RootPage, current_user
+from login import Protected, IndexPage, LoginPage, LogoutPage, RootPage, current_user
 from ws import LinkServerProtocol, LinkServerFactory
 from router import LinkRouter
 from ajax import Ajax
