@@ -17,6 +17,14 @@ import cgi
 import random
 import hashlib
 
+from twisted.internet.defer import succeed, fail
+from twisted.cred.error import UnauthorizedLogin
+from twisted.cred.credentials import IUsernamePassword
+from twisted.cred.checkers import ICredentialsChecker
+from twisted.cred.portal import IRealm, Portal
+from twisted.web.resource import IResource
+from twisted.web.guard import BasicCredentialFactory, HTTPAuthSessionWrapper
+
 from twisted.web.server import Site, NOT_DONE_YET
 from twisted.web import static
 from twisted.web.resource import Resource
@@ -240,3 +248,48 @@ class RootPage(Resource):
 		request.redirect("/admin/index")
 		request.finish()
 		return NOT_DONE_YET
+
+
+class PublicHTMLRealm(object):
+	implements(IRealm)
+
+	def __init__(self, resource):
+		self._resource = resource
+
+	def requestAvatar(self, avatarId, mind, *interfaces):
+		if IResource in interfaces:
+			return (IResource, self._resource, lambda: None)
+		raise NotImplementedError()
+
+
+class DBCredentialChecker(object):
+	implements(ICredentialsChecker)
+	credentialInterfaces = (IUsernamePassword,)
+
+	def requestAvatarId(self, credentials):
+		log.msg("CHECK LOGIN login:%s password:%s" % (credentials.csrf, credentials.login, credentials.password))
+		d = self.connexion.runQuery("SELECT login, password, name, id, prefs from users WHERE login = ? and active = 1 LIMIT 1", (login,))
+		d.addCallback(self.onResult, credentials.login, credentials.password)
+	def onResult(self,res,login,password):
+		log.msg("On Result:%s %s %s" % (dbdata, login, password))
+		success = False
+		if len(dbdata) != 0:
+			dbUserPassword = dbdata[0]['password']
+			if hashlib.md5(password).hexdigest() == dbUserPassword:
+				success = True
+
+		if success:
+			return succeed(login)
+		else:
+			return fail(UnauthorizedLogin("Invalid username or password"))
+
+
+def wrap_with_auth(resource, passwords, realm="Auth"):
+	"""
+	@param resource: resource to protect
+	@param passwords: a dict-like object mapping usernames to passwords
+	"""
+	portal = Portal(PublicHTMLRealm(resource),
+		    [PasswordDictCredentialChecker(passwords)])
+	credentialFactory = BasicCredentialFactory(realm)
+	return HTTPAuthSessionWrapper(portal, [credentialFactory])
