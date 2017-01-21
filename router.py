@@ -1,8 +1,8 @@
 from twisted.internet import defer
-from user import User
-from stories import Stories
-from pages import Pages
-import constantes
+from modules.user import User
+from modules.stories import Stories
+from modules.pages import Pages
+import modules.constantes as constantes
 
 def actions(a,p,iduser):
 	if a=="addAcl":
@@ -89,7 +89,7 @@ def gets(tab,res,iduser):
 	if tab[0]=="page":
 		res=Pages().get_page(tab[1],iduser)
 	if tab[0]=="constantes":
-		res=constantes.data.copy()
+		res=constantes.conf.copy()
 	return res
 def deps(tab,res):
 	if tab[0]=="group":
@@ -104,3 +104,17 @@ def deps(tab,res):
 	if tab[0]=="users":
 		res.append('usersall')
 	return res
+
+def context_verrou(ctype):
+	tab=ctype.split('/')
+	print("context verrou %s" % ctype)
+	if tab[0]=="user":
+		return 'users'
+	if tab[0]=="group":
+		return 'groups'
+	if tab[0]=="page":
+		return 'pages'
+	if "story_" in tab[0]:
+		return 'story/%s' % tab[1]
+	return ctype;
+

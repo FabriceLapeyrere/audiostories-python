@@ -4,7 +4,7 @@ from twisted.web.resource import Resource
 from twisted.web.static import File
 from twisted.web.server import NOT_DONE_YET
 from jinja2 import Template, Environment, PackageLoader
-from config import conf
+from admin.modules.constantes import conf
 from admin.modules.stories import Stories
 from admin.modules.pages import Pages
 from twisted.web import rewrite

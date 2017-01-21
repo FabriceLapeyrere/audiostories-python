@@ -4,29 +4,18 @@ from twisted.web.resource import IResource, Resource
 from twisted.web.static import File
 from twisted.web import rewrite
 from login import Protected, IndexPage, LoginPage, LogoutPage, RootPage, current_user
-from ws import LinkServerProtocol, LinkServerFactory
-from router import LinkRouter
+from ws import wsfactory
 from ajax import Ajax
 from upload import Upload
-from autobahn.twisted.websocket import WebSocketServerFactory
 from autobahn.twisted.resource import WebSocketResource
 import os, glob
 from twisted.web.util import redirectTo
 from previsu import Previsu
 
 dataok=False
-peers={}
-logged={}
-notified={}
-cache={}
-subs={}
-verrous={}
-wsfactory = LinkServerFactory()
-wsrouter = LinkRouter()
 class Admin(object):
 	def __init__(self, site):
 		myroot = RootPage()
-		wsfactory.protocol = LinkServerProtocol
 		wsfactory.site = site
 		wsresource = WebSocketResource(wsfactory)
 		myroot.putChild("index", Protected(IndexPage()))

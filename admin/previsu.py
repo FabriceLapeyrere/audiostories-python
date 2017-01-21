@@ -5,7 +5,7 @@ from twisted.web.resource import Resource
 from twisted.web.static import File
 from login import current_user
 from modules.stories import Stories
-from config import conf
+from modules.constantes import conf
 import json
 
 env = Environment(loader=PackageLoader('admin','templates'))

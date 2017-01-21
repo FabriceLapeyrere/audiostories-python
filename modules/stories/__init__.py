@@ -1,8 +1,9 @@
 from twisted.internet import task
 from twisted.internet import reactor
 from db import DB
-from config import conf
-import os, json, glob, time, admin, Image
+from ws import maj, get_verrou
+from admin.modules.constantes import conf
+import os, json, glob, time, Image
 import numpy as np
 import soundfile as sf
 import re
@@ -51,10 +52,10 @@ class Stories(object):
 				row['sons']['B']['subs']['fr']=[]
 			for lang in row['sons']['A']['subs']:
 				for x in range(len(row['sons']['A']['subs'][lang])):	
-					row['sons']['A']['subs'][lang][x]['verrou']=admin.router.LinkRouter().get_verrou('story_A_subs_%s_%s/%s' % (lang,row['sons']['A']['subs'][lang][x]['uuid'],row['id']))
+					row['sons']['A']['subs'][lang][x]['verrou']=get_verrou('story_A_subs_%s_%s/%s' % (lang,row['sons']['A']['subs'][lang][x]['uuid'],row['id']))
 			for lang in row['sons']['B']['subs']:
 				for x in range(len(row['sons']['B']['subs'][lang])):	
-					row['sons']['B']['subs'][lang][x]['verrou']=admin.router.LinkRouter().get_verrou('story_B_subs_%s_%s/%s' % (lang,row['sons']['B']['subs'][lang][x]['uuid'],row['id']))
+					row['sons']['B']['subs'][lang][x]['verrou']=get_verrou('story_B_subs_%s_%s/%s' % (lang,row['sons']['B']['subs'][lang][x]['uuid'],row['id']))
 			for f in glob.iglob("data/files/story/%s/faceA/*" % row['id']):
 				if os.path.isfile(f):
 					basename=os.path.basename(f)
@@ -102,13 +103,13 @@ class Stories(object):
 				row['groups']=json.loads(row['groups'])
 			except:
 				row['groups']=[]
-			row['verrou_nom']=admin.router.LinkRouter().get_verrou('story_nom/%s' % (row['id']))
-			row['verrou_pitch']=admin.router.LinkRouter().get_verrou('story_pitch/%s' % (row['id']))
-			row['verrou_faceA']=admin.router.LinkRouter().get_verrou('story_faceA/%s' % (row['id']))
-			row['verrou_faceB']=admin.router.LinkRouter().get_verrou('story_faceB/%s' % (row['id']))
-			row['verrou_date']=admin.router.LinkRouter().get_verrou('story_date/%s' % (row['id']))
-			row['verrou_desc']=admin.router.LinkRouter().get_verrou('story_desc/%s' % (row['id']))
-			row['verrou_couleur']=admin.router.LinkRouter().get_verrou('story_couleur/%s' % (row['id']))
+			row['verrou_nom']=get_verrou('story_nom/%s' % (row['id']))
+			row['verrou_pitch']=get_verrou('story_pitch/%s' % (row['id']))
+			row['verrou_faceA']=get_verrou('story_faceA/%s' % (row['id']))
+			row['verrou_faceB']=get_verrou('story_faceB/%s' % (row['id']))
+			row['verrou_date']=get_verrou('story_date/%s' % (row['id']))
+			row['verrou_desc']=get_verrou('story_desc/%s' % (row['id']))
+			row['verrou_couleur']=get_verrou('story_couleur/%s' % (row['id']))
 			return row
 		return {}
 	def build_header(self,dbentries,iduser):
@@ -144,7 +145,7 @@ class Stories(object):
 		txn.execute('UPDATE stories SET modificationdate=?, modifiedby=? WHERE id=?', (now, iduser, idstory))
 		return idstory
 	def touch_story(self,idstory,iduser):
-		return self.connexion.runInteraction(self.do_touch_story, idstory, iduser).addCallback(lambda idstory: admin.wsrouter.maj(["story/%s" % idstory],idstory,iduser))
+		return self.connexion.runInteraction(self.do_touch_story, idstory, iduser).addCallback(lambda idstory: maj(["story/%s" % idstory],idstory,iduser))
 	def del_file(self,params,iduser):
 		idstory=params['id']
 		f=params['file']
@@ -166,7 +167,7 @@ class Stories(object):
 		task.deferLater(reactor, 1, self.check_gradient, idstory, couleur).addCallback(lambda x:self.touch_story(idstory,iduser))
 		return idstory
 	def mod_story(self,params,iduser):
-		return self.connexion.runInteraction(self.do_mod_story, params, iduser).addCallback(lambda idstory: admin.wsrouter.maj(["story/%s" % idstory],idstory,iduser))
+		return self.connexion.runInteraction(self.do_mod_story, params, iduser).addCallback(lambda idstory: maj(["story/%s" % idstory],idstory,iduser))
 	def do_mod_statut(self,txn,params,iduser):
 		now=int(time.time()*1000.0)
 		idstory=params.get('id','')
@@ -174,7 +175,7 @@ class Stories(object):
 		txn.execute('UPDATE stories SET statut=?, modificationdate=?, modifiedby=? WHERE id=? AND ? in (SELECT id FROM users WHERE role=2)',(statut, now, iduser,idstory,iduser))
 		return idstory
 	def mod_statut(self,params,iduser):
-		return self.connexion.runInteraction(self.do_mod_statut, params, iduser).addCallback(lambda idstory: admin.wsrouter.maj(["story/%s" % idstory],idstory,iduser))
+		return self.connexion.runInteraction(self.do_mod_statut, params, iduser).addCallback(lambda idstory: maj(["story/%s" % idstory],idstory,iduser))
 	def do_del_story(self,txn,params,iduser):
 		idstory=params['story']['id']
 		story=params['story']
@@ -183,14 +184,14 @@ class Stories(object):
 		txn.execute('DELETE FROM stories WHERE id=? ', (idstory,))
 		return idstory
 	def del_story(self,params,iduser):
-		return self.connexion.runInteraction(self.do_del_story, params, iduser).addCallback(lambda idstory: admin.wsrouter.maj(["story/%s" % idstory],idstory,iduser))
+		return self.connexion.runInteraction(self.do_del_story, params, iduser).addCallback(lambda idstory: maj(["story/%s" % idstory],idstory,iduser))
 	def do_add_story(self,txn,params,iduser):
 		nom=params['story']['nom']
 		now=int(time.time()*1000.0)
 		txn.execute('INSERT INTO stories (nom, desc, pitch, couleur, sons, photos, statut, date,  creationdate, createdby, modificationdate, modifiedby) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',(nom, '', '', json.dumps(['#FFFFFF','#FF0000','#00FF00','#0000FF']), '{}', json.dumps({'une':'','paires':[]}), 0, now, now, iduser, now, iduser))
 		return txn.lastrowid
 	def add_story(self,params,iduser):
-		return self.connexion.runInteraction(self.do_add_story, params, iduser).addCallback(lambda idstory: admin.wsrouter.maj(["story/%s" % idstory],idstory,iduser))
+		return self.connexion.runInteraction(self.do_add_story, params, iduser).addCallback(lambda idstory: maj(["story/%s" % idstory],idstory,iduser))
 	def do_check_data(self,dbentries):
 		for row in dbentries:
 			self.check_miniatures(row['id'])

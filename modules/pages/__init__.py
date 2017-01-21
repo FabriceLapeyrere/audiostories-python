@@ -1,12 +1,13 @@
 from db import DB
-import admin, json, time 
+from ws import maj
+import json, time 
 class Pages(object):
 	def __init__(self):
 		db = DB()
 		self.connexion=db.connexion
 	def build_page(self, dbentries):
 		page=dbentries[0]
-		page['verrou']=admin.router.LinkRouter().get_verrou('page/%s' % (page['id']))
+		page['verrou']=LinkRouter().get_verrou('page/%s' % (page['id']))
 		return page
 	def build_pages(self,dbentries):
 		pages=[]
@@ -30,7 +31,7 @@ class Pages(object):
 		txn.execute('UPDATE pages SET nom=?, html=?, statut=?, modificationdate=?, modifiedby=? WHERE id=?',(nom, html, statut, now, iduser,idpage))
 		return idpage
 	def mod_page(self,params,iduser):
-		return self.connexion.runInteraction(self.do_mod_page, params, iduser).addCallback(lambda idpage: admin.wsrouter.maj(["page/%s" % idpage],idpage,iduser))
+		return self.connexion.runInteraction(self.do_mod_page, params, iduser).addCallback(lambda idpage: maj(["page/%s" % idpage],idpage,iduser))
 	def do_del_page(self,txn,params,iduser):
 		idpage=params['page']['id']
 		page=params['page']
@@ -39,11 +40,11 @@ class Pages(object):
 		txn.execute('DELETE FROM pages WHERE id=? ', (idpage,))
 		return idpage
 	def del_page(self,params,iduser):
-		return self.connexion.runInteraction(self.do_del_page, params, iduser).addCallback(lambda idpage: admin.wsrouter.maj(["page/%s" % idpage],idpage,iduser))
+		return self.connexion.runInteraction(self.do_del_page, params, iduser).addCallback(lambda idpage: maj(["page/%s" % idpage],idpage,iduser))
 	def do_add_page(self,txn,params,iduser):
 		nom=params['page']['nom']
 		now=int(time.time()*1000.0)
 		txn.execute('INSERT INTO pages (nom, html, statut, creationdate, createdby, modificationdate, modifiedby) VALUES (?,?,?,?,?,?,?)',(nom, '', 0, now, iduser, now, iduser))
 		return txn.lastrowid
 	def add_page(self,params,iduser):
-		return self.connexion.runInteraction(self.do_add_page, params, iduser).addCallback(lambda idpage: admin.wsrouter.maj(["page/%s" % idpage],idpage,iduser))
+		return self.connexion.runInteraction(self.do_add_page, params, iduser).addCallback(lambda idpage: maj(["page/%s" % idpage],idpage,iduser))
