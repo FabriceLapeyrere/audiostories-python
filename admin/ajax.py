@@ -1,6 +1,6 @@
 from twisted.web.server import NOT_DONE_YET
 from twisted.web.resource import Resource
-from ws.router import actions
+from router import actions
 import json, login
 class Ajax(Resource):
 	def __init__(self):

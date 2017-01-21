@@ -119,24 +119,42 @@
 {% if story.sons.A.file.filename %}
 <script>
 	var faceA='{{story.id}}/files/faceA/{{story.sons.A.file.filename}}';
-	var faceB='{{story.id}}/files/faceB/{{story.sons.B.file.filename}}';
 	var APeaks={{story.sons.A.peaks|tojson}};
-	var BPeaks={{story.sons.B.peaks|tojson}};
 	var Asubs={{story.sons.A.subs|tojson}};
+</script>
+{% else %}
+<script>
+	var faceA='';
+	var APeaks=[];
+	var Asubs={};
+</script>
+{% endif %}
+{% if story.sons.B.file.filename %}
+<script>
+	var faceB='{{story.id}}/files/faceB/{{story.sons.B.file.filename}}';
+	var BPeaks={{story.sons.B.peaks|tojson}};
 	var Bsubs={{story.sons.B.subs|tojson}};
+</script>
+{% else %}
+<script>
+	var faceB='';
+	var BPeaks=[];
+	var Bsubs={};
 </script>
 {% endif %}
 <script>
 	var Paires=[];
 	var PairesOk=[];
 {% for p in story.photos.paires %}
+	{% if p.gauche and p.droite %}
 	Paires.push({gauche:'{{story.id}}/files/{{story.miniatures[p.gauche].hd}}',droite:'{{story.id}}/files/{{story.miniatures[p.droite].hd}}'});
 	PairesOk.push({gauche:'',droite:''});
+	
+	{% endif %}
 {% endfor %}
 </script>
 
 <script src="{{story.id}}/lib/jquery-1.11.1.min.js"></script>
-<script src="{{story.id}}/lib/jquery.tools.scrollable.min.js"></script>
 <script src="{{story.id}}/lib/jquery.modal.min.js"></script>
 <script src="{{story.id}}/lib/Smooth-0.1.7.js"></script>
 <script src="{{story.id}}/lib/wavesurfer.min.js"></script>

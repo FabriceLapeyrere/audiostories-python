@@ -3,35 +3,29 @@ from twisted.python import log
 from twisted.web.resource import IResource, Resource
 from twisted.web.static import File
 from twisted.web import rewrite
-from login import Protected, IndexPage, LoginPage, LogoutPage, RootPage, current_user
-from ws import wsfactory
-from ajax import Ajax
-from upload import Upload
+import  os, glob, login, upload, previsu, ajax, ws
 from autobahn.twisted.resource import WebSocketResource
-import os, glob
 from twisted.web.util import redirectTo
-from previsu import Previsu
 
 dataok=False
 class Admin(object):
 	def __init__(self, site):
-		myroot = RootPage()
-		wsfactory.site = site
-		wsresource = WebSocketResource(wsfactory)
-		myroot.putChild("index", Protected(IndexPage()))
-		myroot.putChild("login", LoginPage())
-		myroot.putChild("logout", LogoutPage())
+		myroot = login.RootPage()
+		ws.wsfactory.site = site
+		myroot.putChild("index", login.Protected(login.IndexPage()))
+		myroot.putChild("login", login.LoginPage())
+		myroot.putChild("logout", login.LogoutPage())
 		myroot.putChild("img", File("admin/core/img", "application/javascript"))
-		myroot.putChild("partials", Protected(File("admin/core/partials", "application/javascript")))
+		myroot.putChild("partials", login.Protected(File("admin/core/partials", "application/javascript")))
 		myroot.putChild("css", File("admin/core/css", "application/javascript"))
 		myroot.putChild("lib", File("admin/core/lib", "application/javascript"))
 		myroot.putChild("js", File("admin/core/js", "application/javascript"))
-		myroot.putChild("files", Protected(File("data/files", "application/javascript")))
-		myroot.putChild("ajax", Protected(Ajax()))
-		myroot.putChild("previsu", Protected(Previsu()))
-		myroot.putChild("upload", Protected(Upload()))
-		myroot.putChild(b"ws", wsresource)
-		for m in glob.iglob("admin/modules/*"):
+		myroot.putChild("files", login.Protected(File("data/files", "application/javascript")))
+		myroot.putChild("ajax", login.Protected(ajax.Ajax()))
+		myroot.putChild("previsu", login.Protected(previsu.Previsu()))
+		myroot.putChild("upload", login.Protected(upload.Upload()))
+		myroot.putChild(b"ws", WebSocketResource(ws.wsfactory))
+		for m in glob.iglob("modules/*"):
 			mod=os.path.basename(m)
-			myroot.putChild("%s_partials" % mod, File("admin/modules/%s/partials" % mod, "application/javascript"))
+			myroot.putChild("%s_partials" % mod, File("modules/%s/partials" % mod, "application/javascript"))
 		self.root=myroot

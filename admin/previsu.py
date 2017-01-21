@@ -4,14 +4,14 @@ from twisted.internet import defer
 from twisted.web.resource import Resource
 from twisted.web.static import File
 from login import current_user
-from modules.stories import Stories
-from modules.constantes import conf
 import json
+import modules.stories
+import modules.constantes
 
 env = Environment(loader=PackageLoader('admin','templates'))
 def html_image_vide(taille):
-	w=int(conf['miniatures'][taille])
-	h=int(w/conf['ratio'])
+	w=int(modules.constantes.conf['miniatures'][taille])
+	h=int(w/modules.constantes.conf['ratio'])
 	return "<img class='img-responsive' width='%s' height='%s'>" % (w,h)
 def html_image(f,idstory):
 	return "<img class='img-responsive' src='%s/files/%s'>" % (idstory,f);
@@ -55,8 +55,7 @@ class Previsuid(Resource):
 		self.idstory = idstory
 		self.iduser = iduser
 	def render_GET(self, request):
-		S=Stories()
-		dl = defer.DeferredList([S.get_story(self.idstory,self.iduser), S.get_stories(self.iduser)])
+		dl = defer.DeferredList([modules.stories.get_story(self.idstory,self.iduser), modules.stories.get_stories(self.iduser)])
 		dl.addCallback(self._delayedRender,request)
 		return NOT_DONE_YET
 	def _delayedRender(self, res, request):
@@ -64,7 +63,7 @@ class Previsuid(Resource):
 			ctx = {}
 			ctx['story'] = res[0][1]
 			ctx['stories'] = res[1][1]
-			ctx['ratio'] = conf['ratio']
+			ctx['ratio'] = modules.constantes.conf['ratio']
 			ctx['pages'] = []
 			template = env.get_template("previsu.html")
 			request.write(template.render(ctx).encode('utf-8'))

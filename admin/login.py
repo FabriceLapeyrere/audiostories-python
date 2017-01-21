@@ -12,10 +12,8 @@
 # pip install Jinja2
 # python -m muet.login_logic_jinga2
 
-import sys
-import cgi
-import random
-import hashlib
+import sys, cgi, random, hashlib, ws, db
+import modules.constantes
 
 from twisted.web.server import Site, NOT_DONE_YET
 from twisted.web import static
@@ -29,8 +27,7 @@ from twisted.python.components import registerAdapter
 
 from jinja2 import Template, Environment, PackageLoader
 env = Environment(loader=PackageLoader('admin','templates')) # templates dir under muet package
-import admin, config
-from db import DB
+
 #
 # Access to session data is through a componentized interface
 #
@@ -89,8 +86,6 @@ def require_login(request):
 class LoginPage(Resource):
 
 	def __init__(self):
-		db = DB()			# the database connection
-		self.connexion=db.connexion
 		Resource.__init__(self)
 
 	# unconditionally render the login page
@@ -104,7 +99,7 @@ class LoginPage(Resource):
 		else :
 			urlref="/admin/stories"
 		ctx = {
-			'brand' : config.conf['brand'],
+			'brand' : modules.constantes.conf['brand'],
 			'_urlref' : urlref,
 			'_csrf' : avatar.csrf
 			}
@@ -137,13 +132,13 @@ class LoginPage(Resource):
 
 		if success:
 			session = request.getSession()
-			session.notifyOnExpire(lambda: admin.wsfactory.logout(session.uid))
+			session.notifyOnExpire(lambda: ws.wsfactory.logout(session.uid))
 			avatar = IAvatarSessionData(session)
 			avatar.login = login
 			avatar.name = dbUserName
 			avatar.userid = dbUserUid
 			avatar.prefs = dbUserPrefs
-			admin.logged[session.uid]={'userid':dbUserUid, 'peers':[]}
+			ws.logged[session.uid]={'userid':dbUserUid, 'peers':[]}
 			log.msg("AVATAR uid : %s" % session.uid)
 			
 			request.redirect(urlref)
@@ -178,7 +173,7 @@ class LoginPage(Resource):
 			
 
 		# Run the query
-		d = self.connexion.runQuery("SELECT login, password, name, id, prefs from users WHERE login = ? and active = 1 LIMIT 1", (login,))
+		d = db.connexion.runQuery("SELECT login, password, name, id, prefs from users WHERE login = ? and active = 1 LIMIT 1", (login,))
 		d.addCallback(self.onResult, request, login, password, urlref)
 
 		return NOT_DONE_YET
@@ -236,8 +231,8 @@ class IndexPage(Resource):
 		user = current_user(request)
 		# add the user to the context
 		ctx = {}
-		ctx['brand'] = config.conf['brand']
-		ctx['ratio'] = 100/config.conf['ratio']
+		ctx['brand'] =  modules.constantes.conf['brand']
+		ctx['ratio'] = 100/ modules.constantes.conf['ratio']
 		ctx['user_name'] = user['name']
 		ctx['user_login'] = user['login']
 		ctx['user_id'] = user['uid']

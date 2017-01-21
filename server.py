@@ -24,29 +24,25 @@
 #
 ###############################################################################
 
-import sys
-
+import sys, admin, public
+import modules.stories
 from twisted.internet import reactor
 from twisted.python import log
 from twisted.web.resource import Resource
 from twisted.web.server import Site, Session
 from twisted.web.static import File
-from modules.stories import Stories
-from admin import Admin
-from public import Public
 
 class MySession(Session):
 	sessionTimeout = 1800
 
 if __name__ == "__main__":
-	S=Stories()
-	S.check_data()
+	modules.stories.check_data()
 	log.startLogging(sys.stdout)
-	pub=Public()
+	pub=public.Public()
 	root = pub.root
 	site = Site(root)
 	site.sessionFactory=MySession
-	adm=Admin(site)
+	adm=admin.Admin(site)
 	root.putChild("admin", adm.root)
 	reactor.listenTCP(8880, site)
 

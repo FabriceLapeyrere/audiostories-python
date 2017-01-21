@@ -1,95 +1,76 @@
 from twisted.internet import defer
-from modules.user import User
-from modules.stories import Stories
-from modules.pages import Pages
-import modules.constantes as constantes
+import modules.stories
+import modules.pages
+import modules.user
+import modules.constantes
 
 def actions(a,p,iduser):
 	if a=="addAcl":
-		u=user.User()
-		return u.add_acl(p['type_ressource'],p['id_ressource'],p['type_acces'],p['id_acces'],p['level'],iduser)
+		return modules.user.add_acl(p['type_ressource'],p['id_ressource'],p['type_acces'],p['id_acces'],p['level'],iduser)
 	if a=="delAcl":
-		u=user.User()
-		return u.del_acl(p['type_ressource'],p['id_ressource'],p['type_acces'],p['id_acces'],p['level'],iduser)
+		return modules.user.del_acl(p['type_ressource'],p['id_ressource'],p['type_acces'],p['id_acces'],p['level'],iduser)
 	if a=="addUserGroup":
-		u=user.User()
-		return u.add_user_group(p['userid'],p['groupid'],iduser)
+		return modules.user.add_user_group(p['userid'],p['groupid'],iduser)
 	if a=="delUserGroup":
-		u=user.User()
-		return u.del_user_group(p['userid'],p['groupid'],iduser)
+		return modules.user.del_user_group(p['userid'],p['groupid'],iduser)
 	if a=="addGroup":
-		u=user.User()
-		return u.add_group(p['nom'],iduser)
+		return modules.user.add_group(p['nom'],iduser)
 	if a=="modGroup":
-		u=user.User()
-		return u.mod_group(p['id'],p['nom'],iduser)
+		return modules.user.mod_group(p['id'],p['nom'],iduser)
 	if a=="delGroup":
-		u=user.User()
-		return u.del_group(p['id'],iduser)
+		return modules.user.del_group(p['id'],iduser)
 	if a=="addUser":
-		u=user.User()
-		return u.add_user(p['login'],p['name'],p['pwd'],iduser)
+		return modules.user.add_user(p['login'],p['name'],p['pwd'],iduser)
 	if a=="modMoi":
-		u=user.User()
-		return u.mod_moi(p['id'],p['login'],p['name'],p.get('pwd',''),iduser)
+		return modules.user.mod_moi(p['id'],p['login'],p['name'],modules.pages.get('pwd',''),iduser)
 	if a=="modUser":
-		u=user.User()
-		return u.mod_user(p['id'],p['login'],p['name'],p.get('pwd',''),p['role'],iduser)
+		return modules.user.mod_user(p['id'],p['login'],p['name'],modules.pages.get('pwd',''),p['role'],iduser)
 	if a=="delUser":
-		u=user.User()
-		return u.del_user(p['id'],iduser)
+		return modules.user.del_user(p['id'],iduser)
 	if a=="addPage":
-		P=Pages()
-		return P.add_page(p,iduser)
+		return modules.pages.add_page(p,iduser)
 	if a=="modPage":
-		P=Pages()
-		return P.mod_page(p,iduser)
+		return modules.pages.mod_page(p,iduser)
 	if a=="delPage":
-		P=Pages()
-		return P.del_page(p,iduser)
+		return modules.pages.del_page(p,iduser)
 	if a=="addStory":
-		s=Stories()
-		return s.add_story(p,iduser)
+		return modules.stories.add_story(p,iduser)
 	if a=="modStory":
-		s=Stories()
-		return s.mod_story(p,iduser)
+		return modules.stories.mod_story(p,iduser)
 	if a=="modStatut":
-		s=Stories()
-		return s.mod_statut(p,iduser)
+		return modules.stories.mod_statut(p,iduser)
 	if a=="delStory":
-		s=Stories()
-		return s.del_story(p,iduser)
+		return modules.stories.del_story(p,iduser)
 	if a=="delFile":
-		s=Stories()
-		return defer.maybeDeferred(lambda: s.del_file(p,iduser))
+		return defer.maybeDeferred(lambda: modules.stories.del_file(p,iduser))
 	if a=="addConstante":
-		return defer.maybeDeferred(lambda: constantes.addc(p['k'],p['v'],iduser))
+		return defer.maybeDeferred(lambda: modules.constantes.addc(p['k'],p['v'],iduser))
 	if a=="delConstante":
-		return defer.maybeDeferred(lambda: constantes.delc(p['k'],iduser))
+		return defer.maybeDeferred(lambda: modules.constantes.delc(p['k'],iduser))
 	if a=="modConstante":
-		return defer.maybeDeferred(lambda: constantes.modc(p['k'],p['v'],iduser))
+		return defer.maybeDeferred(lambda: modules.constantes.modc(p['k'],p['v'],iduser))
 	return defer.maybeDeferred(lambda: 'no action match')
 def gets(tab,res,iduser):
 	if tab[0]=="group":
-		res=User().get_group(tab[1],iduser)
+		res=modules.user.get_group(tab[1],iduser)
 	if tab[0]=="groups":
-		res=User().get_groups(iduser)
+		res=modules.user.get_groups(iduser)
 	if tab[0]=="user":
-		res=User().get_user(tab[1],iduser)
+		res=modules.user.get_user(tab[1],iduser)
 	if tab[0]=="users":
-		res=User().get_users(iduser)
+		res=modules.user.get_users(iduser)
 	if tab[0]=="usersall":
-		res=User().get_users_all(iduser)
+		res=modules.user.get_users_all(iduser)
 	if tab[0]=="stories":
-		res=Stories().get_stories(iduser)
+		res=modules.stories.get_stories(iduser)
 	if tab[0]=="story":
-		res=Stories().get_story(tab[1],iduser)
+		res=modules.stories.get_story(tab[1],iduser)
 	if tab[0]=="pages":
-		res=Pages().get_pages(iduser)
+		res=modules.pages.get_pages(iduser)
 	if tab[0]=="page":
-		res=Pages().get_page(tab[1],iduser)
+		res=modules.pages.get_page(tab[1],iduser)
 	if tab[0]=="constantes":
-		res=constantes.conf.copy()
+		res=modules.constantes.conf.copy()
 	return res
 def deps(tab,res):
 	if tab[0]=="group":

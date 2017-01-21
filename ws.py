@@ -1,16 +1,8 @@
-import hashlib, json
-import router
+from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
+import hashlib, json, sys, router, Cookie
 from twisted.internet import defer
 
 this = sys.modules[__name__]
-this.notified={}
-this.cache={}
-this.subs={}
-this.verrous={}
-this.peers={}
-this.logged={}
-this.wsfactory = LinkServerFactory()
-this.wsfactory.protocol = LinkServerProtocol
 
 def get_context(context):
 	ctype=context['type']
@@ -77,7 +69,7 @@ def del_cache(types):
 			del this.cache[t]
 		except:
 			pass
-def del_cache_all(self):
+def del_cache_all():
 	this.cache={}
 def get_cache(context):
 	t=context['type']
@@ -222,7 +214,6 @@ class LinkServerFactory(WebSocketServerFactory):
 		modele['mypeer']=peer
 		modele['peers']=this.peers
 		modele['logged']=this.logged
-		modele['constantes']=constantes.data
 		m={'type':'modele','collection':modele}
 		msg=json.dumps(m)
 		for p,c in self.clients.items():
@@ -241,4 +232,13 @@ class LinkServerFactory(WebSocketServerFactory):
 						c.sendClose()
 						print("close connexion with {}".format(c.peer))
 			del this.logged[uid]	
+
+this.notified={}
+this.cache={}
+this.subs={}
+this.verrous={}
+this.peers={}
+this.logged={}
+this.wsfactory = this.LinkServerFactory()
+this.wsfactory.protocol = this.LinkServerProtocol
 

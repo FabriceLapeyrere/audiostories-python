@@ -4,17 +4,17 @@ from twisted.web.resource import Resource
 from twisted.web.static import File
 from twisted.web.server import NOT_DONE_YET
 from jinja2 import Template, Environment, PackageLoader
-from admin.modules.constantes import conf
-from admin.modules.stories import Stories
-from admin.modules.pages import Pages
 from twisted.web import rewrite
 from twisted.web.util import redirectTo
 import random, json, os
+import modules.stories
+import modules.pages
+import modules.constantes
 
 env = Environment(loader=PackageLoader('public','templates'))
 def html_image_vide(taille):
-	w=int(conf['miniatures'][taille])
-	h=int(w/conf['ratio'])
+	w=int(modules.constantes.conf['miniatures'][taille])
+	h=int(w/modules.constantes.conf['ratio'])
 	return "<img class='img-responsive' width='%s' height='%s'>" % (w,h)
 def html_image(f,idstory):
 	return "<img class='img-responsive' src='%s/files/%s'>" % (idstory,f);
@@ -45,15 +45,13 @@ class RootPage(Resource):
 			return self
 		return Resource.getChild(self, name, request)
 	def render_GET(self, request):
-		S=Stories()
-		P=Pages()
-		dl = defer.DeferredList([S.get_stories_pub(0),P.get_pages_pub(0)])
+		dl = defer.DeferredList([modules.stories.get_stories_pub(0),modules.pages.get_pages_pub(0)])
 		dl.addCallback(self._delayedRender,request)
 		return NOT_DONE_YET
 	def _delayedRender(self, res, request):
 		ctx = {}
 		ctx['stories'] = res[0][1]
-		ctx['brand'] = conf['brand']
+		ctx['brand'] = modules.constantes.conf['brand']
 		ctx['pages'] = res[1][1]
 		ctx['footer'] = ''
 		f="data/footer.html"
@@ -83,9 +81,7 @@ class Storyid(Resource):
 		self.idstory = idstory
 	def render_GET(self, request):
 		idstory=self.idstory
-		S=Stories()
-		P=Pages()
-		dl = defer.DeferredList([S.get_story_pub(idstory,0), S.get_stories_pub(0),P.get_pages_pub(0)])
+		dl = defer.DeferredList([S.get_story_pub(idstory,0), modules.stories.get_stories_pub(0),modules.pages.get_pages_pub(0)])
 		dl.addCallback(self._delayedRender,request)
 		return NOT_DONE_YET
 	def _delayedRender(self, res, request):
@@ -98,7 +94,7 @@ class Storyid(Resource):
 					break
 			#random.shuffle(res[1][1])
 			ctx['stories'] = res[1][1]
-			ctx['ratio'] = conf['ratio']
+			ctx['ratio'] = modules.constantes.conf['ratio']
 			ctx['pages'] = res[2][1]
 			ctx['footer'] = ''
 			f="data/footer.html"
@@ -129,15 +125,13 @@ class Pageid(Resource):
 		self.idpage = idpage
 	def render_GET(self, request):
 		idpage=self.idpage
-		P=Pages()
-		S=Stories()
-		dl = defer.DeferredList([P.get_page_pub(idpage,0),P.get_pages_pub(0),S.get_story_last_pub(0)])
+		dl = defer.DeferredList([modules.pages.get_page_pub(idpage,0),modules.pages.get_pages_pub(0),modules.stories.get_story_last_pub(0)])
 		dl.addCallback(self._delayedRender,request)
 		return NOT_DONE_YET
 	def _delayedRender(self, res, request):
 		if res[0][0] and res[0][1]!={} and res[1][0] and res[1][1]!=[]:
 			ctx = {}
-			ctx['brand'] = conf['brand']
+			ctx['brand'] = modules.constantes.conf['brand']
 			ctx['page'] = res[0][1]
 			ctx['pages'] = res[1][1]
 			ctx['story'] = res[2][1]

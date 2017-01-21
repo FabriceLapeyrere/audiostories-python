@@ -1,10 +1,10 @@
 from twisted.internet import task, reactor
 from twisted.web.server import NOT_DONE_YET
-from modules.stories import Stories
-from modules.user import User
 from twisted.web import iweb
 from twisted.web.resource import Resource
 import cgi, glob, re, unicodedata, os, login
+import modules.stories
+import modules.user
 
 class Upload(Resource):
 	def __init__(self):
@@ -61,8 +61,7 @@ class Upload(Resource):
 					fp =open(path,'wb')
 					fp.write(f.value)
 					fp.close()
-					s=Stories()
-					task.deferLater(reactor, 1, s.check_miniatures, idstory).addCallback(lambda x:s.touch_story(idstory,user['uid']))
+					task.deferLater(reactor, 1, modules.stories.check_miniatures, idstory).addCallback(lambda x:modules.stories.touch_story(idstory,user['uid']))
 					request.write('ok')
 					request.finish()
 			if typedoc=='faceA' or typedoc=='faceB':
@@ -78,8 +77,7 @@ class Upload(Resource):
 					fp =open(uploadPath,'wb')
 					fp.write(f.value)
 					fp.close()
-					s=Stories()
-					task.deferLater(reactor, 1, s.check_waveform, idstory).addCallback(lambda x:s.touch_story(idstory,user['uid']))
+					task.deferLater(reactor, 1, modules.stories.check_waveform, idstory).addCallback(lambda x:modules.stories.touch_story(idstory,user['uid']))
 					request.write('ok')
 					request.finish()	
 		else:
@@ -99,6 +97,5 @@ class Upload(Resource):
 		idstory = form['id'].value
 		typedoc = form['type'].value
 		f=form[ 'file' ]
-		u=User()
-		u.is_allowed('stories',idstory,1,user['uid']).addCallback(self.do_write,idstory,typedoc,user,f,request)
+		modules.user.is_allowed('stories',idstory,1,user['uid']).addCallback(self.do_write,idstory,typedoc,user,f,request)
 		return NOT_DONE_YET

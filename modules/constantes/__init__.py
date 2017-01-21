@@ -1,7 +1,10 @@
-import os, json, sys
-from ws import maj
+from twisted.internet import task
+from twisted.internet import reactor
+import os, json, sys, ws
+import modules.stories
 this = sys.modules[__name__]
 this.conf={}
+
 if not os.path.exists('data'):
 	os.makedirs('data')
 if not os.path.isfile('data/constantes.json'):
@@ -37,7 +40,7 @@ def addc(k,v,iduser):
 		if k not in this.conf:
 			this.conf[k]=value
 			this.commit()
-			maj(["*"],k,iduser)
+			ws.maj(["*"],k,iduser)
 def modc(k,v,iduser):
 	if iduser==1:
 		try:
@@ -47,11 +50,13 @@ def modc(k,v,iduser):
 		if k in this.conf:
 			this.conf[k]=value
 			this.commit()
-			maj(["*"],k,iduser)
+			if k=='ratio' or k=='miniatures':
+				task.deferLater(reactor, 1, modules.stories.check_data)
+			ws.maj(["*"],k,iduser)
 def delc(k,iduser):
 	if iduser==1:
 		if k in this.data:
 			del this.conf[k]
 			this.commit()
-			maj(["*"],k,iduser)
+			ws.maj(["*"],k,iduser)
 
