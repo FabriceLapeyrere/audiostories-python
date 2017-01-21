@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-	<title>#{{story.num}} - {{story.nom}}</title>
+	<title>{{story.nom}}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta charset="UTF-8">
 	<meta property="og:title" content="{{story.nom|e}}" />
@@ -9,7 +9,7 @@
 	<meta property="og:type" content="article" />
 	<meta property="og:url" content="{{story.url}}" />
 	{% if story.photos.une!='' %}<meta property="og:image" content="{{story.id}}/{{story.miniatures[story.photos.une].normal}}" />{% endif %}
-	<link rel="icon" href="img/favicon.ico" />
+	<link rel="icon" href="{{story.id}}/img/favicon.ico" />
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
 	<link href="{{story.id}}/lib/css/bootstrap.min.custom.css" media="all" type="text/css" rel="stylesheet">
 	<link href="{{story.id}}/lib/css/jquery.modal.css" media="all" type="text/css" rel="stylesheet">
@@ -95,15 +95,15 @@
 {% for s in stories %}
 	<div class="col-xs-120 col-md-40">
 		<div class="story-small">
-			<a class="astory" href="/story/{{s.id}}">
+			<a class="astory" href="/admin/previsu/{{s.id}}">
 			{% if s.une %}{{s.une.petit|html_image(s.id)}}{% endif %}
 			<div class="img-mask-p"></div>
 			</a>
 			<div class="titres">
 				<div class="col-sm-120 nom">
-				{{s.nom}} <span class="pull-right mini">#{{s.num}}</span>
+				{{s.nom}}
 				</div>
-				<div class="col-md-120 pitch hidden-xs hidden-sm">
+				<div class="col-md-120 pitch">
 				{{s.pitch}}
 				</div>
 				<div class="clearfix"></div>
@@ -112,13 +112,6 @@
 		</div>
 	</div>
 {% endfor %}
-</div>
-<div class="col-xs-120 footer">
-	<ul>
-	{% for p in pages %}
-		<li><a href='p/{{p.id}}'>{{p.nom}}</a></li>
-	{% endfor %}
-	</ul> 
 </div>
 <div class="clearfix"></div>
 </div>

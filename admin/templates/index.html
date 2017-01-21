@@ -44,9 +44,7 @@
         <p class="navbar-text pull-right">
           {% if user_name %}
           Logged in as <strong>{{ user_name }}</strong>.
-          <a ng-click="logout()" href="#" rel="nofollow">Log Out</a>
-          {% else %}
-          <a data-method="delete" href="/admin/login" rel="nofollow">Log In</a>
+          <a class="cursor" ng-click="logout()">Log Out</a>
           {% endif %}
         </p>
 

@@ -11,5 +11,9 @@ class Ajax(Resource):
 	def render_POST(self, request):
 		user=login.current_user(request)
 		data = json.loads(request.content.getvalue())
-		actions(data['action'],data['params'],user['uid']).addCallback(self._delayedRender,request)
-		return NOT_DONE_YET
+		if data['action']=='logout':
+			request.getSession().expire()
+			return 'Logged out !'
+		else:
+			actions(data['action'],data['params'],user['uid']).addCallback(self._delayedRender,request)
+			return NOT_DONE_YET

@@ -37,18 +37,15 @@ class Previsu(Resource):
 	isLeaf = False
 	def getChild(self, name, request):
 		user = current_user(request)
-		if name == '' or 'login' not in user:
-			return self
-		else:
-			idstory=int(name)
-			iduser=user['uid']
-			s=Previsuid(idstory,iduser)
-			s.putChild('lib',File("public/lib", "application/javascript"))
-			s.putChild('css',File("public/css", "application/javascript"))
-			s.putChild('js',File("public/js", "application/javascript"))
-			s.putChild('img',File("public/img", "application/javascript"))
-			s.putChild('files',File("data/files/story/%s" % (idstory), "application/javascript"))
-			return s
+		idstory=int(name)
+		iduser=user['uid']
+		s=Previsuid(idstory,iduser)
+		s.putChild('lib',File("public/lib", "application/javascript"))
+		s.putChild('css',File("public/css", "application/javascript"))
+		s.putChild('js',File("public/js", "application/javascript"))
+		s.putChild('img',File("public/img", "application/javascript"))
+		s.putChild('files',File("data/files/story/%s" % (idstory), "application/javascript"))
+		return s
 	def render_GET(self, request):
 		return redirectTo('/admin', request)
 class Previsuid(Resource):
@@ -59,12 +56,14 @@ class Previsuid(Resource):
 		self.iduser = iduser
 	def render_GET(self, request):
 		S=Stories()
-		S.get_story(self.idstory,self.iduser).addCallback(self._delayedRender,request)
+		dl = defer.DeferredList([S.get_story(self.idstory,self.iduser), S.get_stories(self.iduser)])
+		dl.addCallback(self._delayedRender,request)
 		return NOT_DONE_YET
 	def _delayedRender(self, res, request):
-		if 'id' in res:
+		if 'id' in res[0][1]:
 			ctx = {}
-			ctx['story'] = res
+			ctx['story'] = res[0][1]
+			ctx['stories'] = res[1][1]
 			ctx['ratio'] = conf['ratio']
 			ctx['pages'] = []
 			template = env.get_template("previsu.html")

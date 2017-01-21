@@ -83,7 +83,7 @@ app.controller('mainCtl', ['$scope', '$http', '$location', '$interval', '$modal'
 		return $sce.trustAsHtml(html);
 	}
 	$scope.logout=function(){
-		$window.location="logout";
+		Link.ajax({action:'logout'});
 	};
 	$scope.calendar=function(t){
 		var date=moment(parseInt(t));;
