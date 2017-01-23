@@ -81,7 +81,7 @@ class Storyid(Resource):
 		self.idstory = idstory
 	def render_GET(self, request):
 		idstory=self.idstory
-		dl = defer.DeferredList([S.get_story_pub(idstory,0), modules.stories.get_stories_pub(0),modules.pages.get_pages_pub(0)])
+		dl = defer.DeferredList([modules.stories.get_story_pub(idstory,0), modules.stories.get_stories_pub(0),modules.pages.get_pages_pub(0)])
 		dl.addCallback(self._delayedRender,request)
 		return NOT_DONE_YET
 	def _delayedRender(self, res, request):

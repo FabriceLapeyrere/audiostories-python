@@ -197,7 +197,7 @@ class LinkServerFactory(WebSocketServerFactory):
 			del this.peers[peer]
 			for k,v in this.verrous.items():
 				if v==peer:
-					LinkRouter().del_verrou(peer,k,1)
+					this.del_verrou(peer,k,1)
 			for i in this.logged:
 				if peer in this.logged[i]['peers']:
 					this.logged[i]['peers'].remove(peer)
