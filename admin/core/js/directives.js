@@ -140,7 +140,7 @@ app.directive('locked', [
 app.directive('waveform', [ '$window', '$interval', '$timeout', 
 	function($window, $interval, $timeout){
 		return {
-			templateUrl: 'stories_partials/inc/waveform.html',
+			templateUrl: 'partials/inc/waveform.html',
 			restrict: 'E',
 			controller:['$scope','$element', function($scope, $element){
 				$scope.txts={subs:'',clock:''};

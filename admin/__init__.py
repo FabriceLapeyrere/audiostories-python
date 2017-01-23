@@ -25,7 +25,5 @@ class Admin(object):
 		myroot.putChild("previsu", login.Protected(previsu.Previsu()))
 		myroot.putChild("upload", login.Protected(upload.Upload()))
 		myroot.putChild(b"ws", WebSocketResource(ws.wsfactory))
-		for m in glob.iglob("modules/*"):
-			mod=os.path.basename(m)
-			myroot.putChild("%s_partials" % mod, File("modules/%s/partials" % mod, "application/javascript"))
+		myroot.putChild("partials", login.Protected(File("admin/partials", "application/javascript")))
 		self.root=myroot

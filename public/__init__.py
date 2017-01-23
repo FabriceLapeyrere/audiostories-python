@@ -1,11 +1,11 @@
 from zope.interface import implements
 from twisted.internet import defer
-from twisted.web.resource import Resource
+from twisted.web.resource import Resource, NoResource
 from twisted.web.static import File
 from twisted.web.server import NOT_DONE_YET
 from jinja2 import Template, Environment, PackageLoader
 from twisted.web import rewrite
-from twisted.web.util import redirectTo
+from twisted.web.util import redirectTo, DeferredResource
 import random, json, os
 import modules.stories
 import modules.pages
@@ -19,7 +19,7 @@ def html_image_vide(taille):
 def html_image(f,idstory):
 	return "<img class='img-responsive' src='%s/files/%s'>" % (idstory,f);
 def html_image_index(f,idstory):
-	return "<img class='img-responsive' src='files/story/%s/%s'>" % (idstory,f);
+	return "<img class='img-responsive' src='story/%s/files/%s'>" % (idstory,f);
 def html_image_diap(f,idstory):
 	return "<img class='img-responsive' data-src='%s/files/%s'>" % (idstory,f);
 def html_background_image(f,idstory):
@@ -67,45 +67,42 @@ class Story(Resource):
 		if name == '':
 			return self
 		idstory=int(name)
-		s=Storyid(idstory)
-		s.putChild('files',File("data/files/story/%s" % (idstory), "application/javascript"))
-		return s
+		dl = defer.DeferredList([modules.stories.get_story_pub(idstory,0), modules.stories.get_stories_pub(0),modules.pages.get_pages_pub(0)])
+		dl.addCallback(self._delayedChild,request)
+		return DeferredResource(dl)
+	def _delayedChild(self, res, request):
+		if res[0][0] and res[0][1]!={} and res[1][0] and res[1][1]!=[]:
+			s=Storyid(res)
+			s.putChild('files', File("data/files/story/%s" % (res[0][1]['id']), "application/javascript"))
+			return s
+		return NoResource("No such resource.")
 	def render_GET(self, request):
-		return redirectTo('/', request)
+		return NoResource("No such resource.").render(request)
 			
 
 class Storyid(Resource):
 	isLeaf = False
-	def __init__(self, idstory):
+	def __init__(self, res):
 		Resource.__init__(self)
-		self.idstory = idstory
+		self.res = res
 	def render_GET(self, request):
-		idstory=self.idstory
-		dl = defer.DeferredList([modules.stories.get_story_pub(idstory,0), modules.stories.get_stories_pub(0),modules.pages.get_pages_pub(0)])
-		dl.addCallback(self._delayedRender,request)
-		return NOT_DONE_YET
-	def _delayedRender(self, res, request):
-		if res[0][0] and res[0][1]!={} and res[1][0] and res[1][1]!=[]:
-			ctx = {}
-			ctx['story'] = res[0][1]
-			for i in range(len(res[1][1])):
-				if res[1][1][i]['id']==self.idstory:
-					del res[1][1][i]
-					break
-			#random.shuffle(res[1][1])
-			ctx['stories'] = res[1][1]
-			ctx['ratio'] = modules.constantes.conf['ratio']
-			ctx['pages'] = res[2][1]
-			ctx['footer'] = ''
-			f="data/footer.html"
-			if os.path.isfile(f):
-				ctx['footer'] = unicode(open(f, "r").read(), 'utf-8')
-			template = env.get_template("story.html")
-			request.write(template.render(ctx).encode('utf-8'))
-			request.finish()
-		else:
-			request.redirect('/')
-			request.finish()
+		ctx = {}
+		ctx['story'] = self.res[0][1]
+		for i in range(len(self.res[1][1])):
+			if self.res[1][1][i]['id']==self.res[0][1]['id']:
+				del self.res[1][1][i]
+				break
+		#random.shuffle(res[1][1])
+		ctx['stories'] = self.res[1][1]
+		ctx['ratio'] = modules.constantes.conf['ratio']
+		ctx['pages'] = self.res[2][1]
+		ctx['footer'] = ''
+		f="data/footer.html"
+		if os.path.isfile(f):
+			ctx['footer'] = unicode(open(f, "r").read(), 'utf-8')
+		template = env.get_template("story.html")
+		return template.render(ctx).encode('utf-8')
+
 class Page(Resource):
 	isLeaf = False
 	def getChild(self, name, request):
@@ -156,5 +153,4 @@ class Public(object):
 		myroot.putChild('css',File("public/css", "application/javascript"))
 		myroot.putChild('js',File("public/js", "application/javascript"))
 		myroot.putChild('img',File("data/img", "application/javascript"))
-		myroot.putChild('files',File("data/files", "application/javascript"))
 		self.root=myroot			

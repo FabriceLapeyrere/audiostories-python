@@ -26,20 +26,20 @@ var app= angular.module('audiostories', ['ngRoute','monospaced.mousewheel','ngDr
 
 app.config(['$routeProvider', function($routeProvider) {
 	//stories
-	$routeProvider.when('/stories', {templateUrl: 'stories_partials/stories.html', controller: 'storiesCtl'});
-	$routeProvider.when('/modstory/:id', {templateUrl: 'stories_partials/modstory.html', controller: 'modstoryCtl'});
+	$routeProvider.when('/stories', {templateUrl: 'partials/stories.html', controller: 'storiesCtl'});
+	$routeProvider.when('/modstory/:id', {templateUrl: 'partials/modstory.html', controller: 'modstoryCtl'});
 	//pages
-	$routeProvider.when('/pages', {templateUrl: 'pages_partials/pages.html', controller: 'pagesCtl'});
-	$routeProvider.when('/modpage/:id', {templateUrl: 'pages_partials/modpage.html', controller: 'modpageCtl'});
+	$routeProvider.when('/pages', {templateUrl: 'partials/pages.html', controller: 'pagesCtl'});
+	$routeProvider.when('/modpage/:id', {templateUrl: 'partials/modpage.html', controller: 'modpageCtl'});
 	//admin
-	$routeProvider.when('/moduser/:id', {templateUrl: 'user_partials/moduser.html', controller: 'modUserCtl'});
-	$routeProvider.when('/adduser', {templateUrl: 'user_partials/adduser.html', controller: 'addUserCtl'});
-	$routeProvider.when('/modgroup/:id', {templateUrl: 'user_partials/modgroup.html', controller: 'modGroupCtl'});
-	$routeProvider.when('/addgroup', {templateUrl: 'user_partials/addgroup.html', controller: 'addGroupCtl'});
-	$routeProvider.when('/modconstante/:id', {templateUrl: 'constantes_partials/modconstante.html', controller: 'modConstanteCtl'});
-	$routeProvider.when('/addconstante', {templateUrl: 'constantes_partials/addconstante.html', controller: 'addConstanteCtl'});
-	$routeProvider.when('/admin', {templateUrl: 'user_partials/admin.html', controller: 'adminCtl'});
-	$routeProvider.when('/moi', {templateUrl: 'user_partials/me.html', controller: 'moiCtl'});
+	$routeProvider.when('/moduser/:id', {templateUrl: 'partials/moduser.html', controller: 'modUserCtl'});
+	$routeProvider.when('/adduser', {templateUrl: 'partials/adduser.html', controller: 'addUserCtl'});
+	$routeProvider.when('/modgroup/:id', {templateUrl: 'partials/modgroup.html', controller: 'modGroupCtl'});
+	$routeProvider.when('/addgroup', {templateUrl: 'partials/addgroup.html', controller: 'addGroupCtl'});
+	$routeProvider.when('/modconstante/:id', {templateUrl: 'partials/modconstante.html', controller: 'modConstanteCtl'});
+	$routeProvider.when('/addconstante', {templateUrl: 'partials/addconstante.html', controller: 'addConstanteCtl'});
+	$routeProvider.when('/admin', {templateUrl: 'partials/admin.html', controller: 'adminCtl'});
+	$routeProvider.when('/moi', {templateUrl: 'partials/me.html', controller: 'moiCtl'});
 	$routeProvider.otherwise({redirectTo: '/stories'});
 }]);
 app.config(['$locationProvider', function($locationProvider) {
@@ -154,7 +154,7 @@ app.controller('mainCtl', ['$scope', '$http', '$location', '$interval', '$modal'
 	$scope.addStoryMod=function(){
 		$scope.addStory={};
 		var modal = $modal.open({
-			templateUrl: 'stories_partials/addstorymod.html',
+			templateUrl: 'partials/addstorymod.html',
 			controller: 'addStoryModCtl',
 			resolve:{
 				story: function () {
@@ -176,7 +176,7 @@ app.controller('mainCtl', ['$scope', '$http', '$location', '$interval', '$modal'
 	$scope.addPageMod=function(){
 		$scope.addPage={};
 		var modal = $modal.open({
-			templateUrl: 'pages_partials/addpagemod.html',
+			templateUrl: 'partials/addpagemod.html',
 			controller: 'addPageModCtl',
 			resolve:{
 				page: function () {
@@ -336,7 +336,7 @@ app.controller('modstoryCtl', ['$scope', '$window', '$http', '$location', '$rout
 	}
 	$scope.help=function(id){
 		$modal.open({
-			templateUrl: 'stories_partials/inc/help_'+id+'.html'
+			templateUrl: 'partials/inc/help_'+id+'.html'
 		});
 	};
 	$scope.modStoryInput=function(k,label){
@@ -348,7 +348,7 @@ app.controller('modstoryCtl', ['$scope', '$window', '$http', '$location', '$rout
 		Link.set_verrou([verrou])
 		var I={label:label,model:m};
 		var modal = $modal.open({
-			templateUrl: 'stories_partials/modinputmod.html',
+			templateUrl: 'partials/modinputmod.html',
 			controller: 'modInputModCtl',
 			resolve:{
 				input: function () {
@@ -376,7 +376,7 @@ app.controller('modstoryCtl', ['$scope', '$window', '$http', '$location', '$rout
 		Link.set_verrou([verrou])
 		var I={label:'soustitre',model:m};
 		var modal = $modal.open({
-			templateUrl: 'stories_partials/modinputmod.html',
+			templateUrl: 'partials/modinputmod.html',
 			controller: 'modInputModCtl',
 			resolve:{
 				input: function () {
@@ -401,7 +401,7 @@ app.controller('modstoryCtl', ['$scope', '$window', '$http', '$location', '$rout
 		Link.set_verrou([verrou])
 		var I={label:label,model:m};
 		var modal = $modal.open({
-			templateUrl: 'stories_partials/moddatemod.html',
+			templateUrl: 'partials/moddatemod.html',
 			controller: 'modInputModCtl',
 			resolve:{
 				input: function () {
@@ -424,7 +424,7 @@ app.controller('modstoryCtl', ['$scope', '$window', '$http', '$location', '$rout
 		Link.set_verrou([verrou])
 		var I={label:label,model:m};
 		var modal = $modal.open({
-			templateUrl: 'stories_partials/modtextemod.html',
+			templateUrl: 'partials/modtextemod.html',
 			controller: 'modInputModCtl',
 			resolve:{
 				input: function () {
@@ -447,7 +447,7 @@ app.controller('modstoryCtl', ['$scope', '$window', '$http', '$location', '$rout
 		Link.set_verrou([verrou])
 		var I={label:label,model:m};
 		var modal = $modal.open({
-			templateUrl: 'stories_partials/modcolormod.html',
+			templateUrl: 'partials/modcolormod.html',
 			controller: 'modInputModCtl',
 			resolve:{
 				input: function () {
