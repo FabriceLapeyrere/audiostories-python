@@ -64,9 +64,10 @@ class RootPage(Resource):
 class Story(Resource):
 	isLeaf = False
 	def getChild(self, name, request):
-		if name == '':
+		try:
+			idstory=int(name)
+		except:
 			return self
-		idstory=int(name)
 		dl = defer.DeferredList([modules.stories.get_story_pub(idstory,0), modules.stories.get_stories_pub(0),modules.pages.get_pages_pub(0)])
 		dl.addCallback(self._delayedChild,request)
 		return DeferredResource(dl)
@@ -106,42 +107,39 @@ class Storyid(Resource):
 class Page(Resource):
 	isLeaf = False
 	def getChild(self, name, request):
-		if name == '':
+		try:
+			idpage=int(name)
+		except:
 			return self
-		idpage=int(name)
-		s=Pageid(idpage)
-		return s
+		dl = defer.DeferredList([modules.pages.get_page_pub(idpage,0),modules.pages.get_pages_pub(0),modules.stories.get_story_last_pub(0)])
+		dl.addCallback(self._delayedChild,request)
+		return DeferredResource(dl)
+	def _delayedChild(self, res, request):
+		if res[0][0] and res[0][1]!={}:
+			p=Pageid(res)
+			return p
+		return NoResource("No such resource.")
 	def render_GET(self, request):
-		return redirectTo('/', request)
+		return NoResource("No such resource.").render(request)
 			
 
 class Pageid(Resource):
 	isLeaf = False
-	def __init__(self, idpage):
+	def __init__(self, res):
 		Resource.__init__(self)
-		self.idpage = idpage
+		self.res = res
 	def render_GET(self, request):
-		idpage=self.idpage
-		dl = defer.DeferredList([modules.pages.get_page_pub(idpage,0),modules.pages.get_pages_pub(0),modules.stories.get_story_last_pub(0)])
-		dl.addCallback(self._delayedRender,request)
-		return NOT_DONE_YET
-	def _delayedRender(self, res, request):
-		if res[0][0] and res[0][1]!={} and res[1][0] and res[1][1]!=[]:
-			ctx = {}
-			ctx['brand'] = modules.constantes.conf['brand']
-			ctx['page'] = res[0][1]
-			ctx['pages'] = res[1][1]
-			ctx['story'] = res[2][1]
-			ctx['footer'] = ''
-			f="data/footer.html"
-			if os.path.isfile(f):
-				ctx['footer'] = unicode(open(f, "r").read(), 'utf-8')
-			template = env.get_template("page.html")
-			request.write(template.render(ctx).encode('utf-8'))
-			request.finish()
-		else:
-			request.redirect('/')
-			request.finish()
+		ctx = {}
+		ctx['brand'] = modules.constantes.conf['brand']
+		ctx['page'] = self.res[0][1]
+		ctx['pages'] = self.res[1][1]
+		ctx['story'] = self.res[2][1]
+		ctx['footer'] = ''
+		f="data/footer.html"
+		if os.path.isfile(f):
+			ctx['footer'] = unicode(open(f, "r").read(), 'utf-8')
+		template = env.get_template("page.html")
+		return template.render(ctx).encode('utf-8')
 
 class Public(object):
 	def __init__(self):

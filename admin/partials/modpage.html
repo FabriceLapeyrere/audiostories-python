@@ -7,7 +7,7 @@
 </div>
 <div class="col-xs-12 clearfix inter"></div>
 <div class="col-xs-12">
-	<p><toggle-switch model="Data.modele[key].statut" knob-label="publié" class='small'></toggle-switch> <a ng-if="Data.modele[key].statut" href="../p/{{Data.modele[key].id}}">voir en ligne</a></p>
+	<p><toggle-switch model="Data.modele[key].statut" knob-label="publié" class='small'></toggle-switch> <a ng-if="Data.modele[key].statut" href="../p/{{Data.modele[key].id}}" target="_blank">voir en ligne</a></p>
 	<label for="nom">Titre</label>
 	<input stop-propagation class="form-control" type="text" ng-model="Data.modele[key].nom"/><br />
 	<label for="desc">Descriptif long</label>

@@ -31,7 +31,7 @@
 		<ul class="list-group">
 			<li ng-repeat="(k, v) in Data.modele.constantes" class="list-group-item">
 				<a href="#/modconstante/{{k}}"><b>{{k}}</b></a> : {{v}}
-				<button ng-if="['brand','lang','ratio'].indexOf(k) < 0" ng-confirm-click="delConstante(k)" ng-confirm-message="Sûr ?" class='btn btn-default btn-xs pull-right'>x</button>
+				<button ng-if="['brand','lang','ratio','miniatures'].indexOf(k) < 0" ng-confirm-click="delConstante(k)" ng-confirm-message="Sûr ?" class='btn btn-default btn-xs pull-right'>x</button>
 			</li>
 		</ul>
 	</div>
