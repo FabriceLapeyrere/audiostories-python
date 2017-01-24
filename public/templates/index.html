@@ -10,7 +10,7 @@
 	<link href="css/audiostories.css" media="all" type="text/css" rel="stylesheet">
 	<style>
 		{% for s in stories %}
-		.color-{{s.id}} {background-image:url("/files/story/{{s.id}}/{{s.gradient}}");background-size:100% 100%;}
+		.color-{{s.id}} {background-image:url("/story/{{s.id}}/files/{{s.gradient}}");background-size:100% 100%;}
 		{% endfor %}
 	</style>
 </head>
