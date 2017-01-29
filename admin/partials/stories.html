@@ -1,8 +1,9 @@
 <div>
 	<div class="col-xs-12 col-md-offset-2 col-md-8">
 		<p><span class="btn btn-primary" ng-click="addStoryMod()">Nouvelle Audiostory</span></p>
+		<pagination ng-show="storiesOk.length>itemsParPage" boundary-links="true" total-items="storiesOk.length" page="currentPage" items-per-page="itemsParPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
 		<ul class="list-group">
-			<li class="list-group-item" ng-repeat="story in Data.modele.stories | exists" ui-on-Drop="addStoryTag($event,$data,story)" drop-channel="tag">
+			<li class="list-group-item" ng-repeat="story in  (storiesOk=(Data.modele.stories | exists | filter:q | orderBy:'name')) | startFrom:(currentPage-1)*itemsParPage | limitTo:itemsParPage">
 				<div class="col-sm-12">
 					<div class="contact-btn cursor">
 						<span class="glyphicon glyphicon-trash" ng-confirm-click="delStory(story)" ng-confirm-message="Sûr?"></span>

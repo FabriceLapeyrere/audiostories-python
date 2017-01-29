@@ -242,6 +242,7 @@ app.controller('accueilCtl', ['$scope', '$http', '$location', function ($scope, 
 //stories
 app.controller('storiesCtl', ['$scope', '$http', '$location', '$modal', 'Link', 'Data', function ($scope, $http, $location, $modal, Link, Data) {
 	$scope.Data=Data;
+	$scope.currentPage=1;
 	Link.context([{type:'stories', params:{}},{type:'groups', params:{}}]);
 	$scope.delStory=function(story){
 		var data={
