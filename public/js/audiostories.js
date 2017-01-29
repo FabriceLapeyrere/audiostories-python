@@ -1,9 +1,9 @@
 $(document).ready(function() {
 	$(".story-big, .story-small").mouseenter(function(){
 		var i=$(this).attr('data-id');
-		for(var j=0;j<$(".story-big, .story-small").length;j++){
-			$('.color-'+j).removeClass('opaque');
-		}
+		$(".story-big, .story-small").each(function(i,e){
+			$('.color-'+$(e).attr('data-id')).removeClass('opaque');
+		});
 		$('.color-'+i).addClass('opaque');
 	});
 	if($('.newsok').length>0) {

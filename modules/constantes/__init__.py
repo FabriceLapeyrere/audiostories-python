@@ -21,10 +21,9 @@ if not os.path.isfile('data/constantes.json'):
 		}
 	}))
 	f.close()
-else:
-	f=open('data/constantes.json', "r")
-	this.conf=json.loads(f.read())
-	f.close()
+f=open('data/constantes.json', "r")
+this.conf=json.loads(f.read())
+f.close()
 
 def commit():
 	f=open('data/constantes.json', "w+")

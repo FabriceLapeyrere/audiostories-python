@@ -24,7 +24,7 @@
 #
 ###############################################################################
 
-import sys, admin, public
+import sys, admin, public, os, shutil
 import modules.stories
 from twisted.internet import reactor
 from twisted.python import log
@@ -36,6 +36,8 @@ class MySession(Session):
 	sessionTimeout = 1800
 
 if __name__ == "__main__":
+	if not os.path.exists('data/img'):
+		shutil.copytree('public/img','data/img')
 	modules.stories.check_data()
 	log.startLogging(sys.stdout)
 	pub=public.Public()

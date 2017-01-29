@@ -142,7 +142,15 @@ app.directive('waveform', [ '$window', '$interval', '$timeout',
 		return {
 			templateUrl: 'partials/inc/waveform.html',
 			restrict: 'E',
-			controller:['$scope','$element', function($scope, $element){
+			controller:['$scope','$element', 'Link', function($scope, $element, Link){
+				$scope.isEqual=function(a,b){
+					if (a && b) {
+						var ac=angular.copy(a);
+						var bc=angular.copy(b);
+						return JSON.stringify(ac, null, 4)==JSON.stringify(bc, null, 4);
+					}
+					return true;
+				};
 				$scope.txts={subs:'',clock:''};
 				$scope.controlSub=function(uuid,e){
 					if (e.ctrlKey || e.shiftKey){
@@ -261,10 +269,13 @@ app.directive('waveform', [ '$window', '$interval', '$timeout',
 						e.preventDefault(mod);
 					}
 				};
-				$scope.$watch("peaks", function(p) {
-					if ($scope.peaks!=p) {
-						console.log('new peaks');
-						$scope.peaks=p;
+				Link.subscribe($scope,function(e,data) {
+					var fo=data.o[$scope.key].sons[$scope.face];
+					var fn=data.n[$scope.key].sons[$scope.face];
+					if (!$scope.isEqual(fo.file,fn.file)){
+						//console.log('new file',fo.file,fn.file);
+						$scope.peaks=fn.peaks;
+						$scope.file='files/'+$scope.key+'/face'+$scope.face+'/' + fn.file.filename;
 						var s= Smooth($scope.peaks);
 						var arrayOfPeaks=[];
 						for (var i=0;i<$scope.peaks.length*5;i++) {
@@ -272,9 +283,11 @@ app.directive('waveform', [ '$window', '$interval', '$timeout',
 						}
 						$scope.wavesurfer.load($scope.file, arrayOfPeaks);
 					}
-				});
-				$scope.$watch("srt", function(srt) {
-					$scope.subprocess($scope.position);
+					if (!$scope.isEqual(fo.subs,fn.subs)){
+						//console.log('new sub');
+						$scope.srt=fn.subs;
+						$scope.subprocess($scope.position);
+					}
 				});
 				$scope.subprocess=function(t){
 					var parts=$scope.srt[$scope.lang];
@@ -359,6 +372,7 @@ app.directive('waveform', [ '$window', '$interval', '$timeout',
 				});
 			}],
 			scope: {
+				key: '@',
 				face: '@',
 				srt: '=',
 				peaks: '=',

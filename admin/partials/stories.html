@@ -10,6 +10,7 @@
 					<a href="#/modstory/{{story.id}}">{{story.nom ? story.nom :'(sans nom)'}}</a>
 				</div>
 			<div class="clearfix"></div>					
+			<div class='bas-droite' ng-if="Data.modele.groups"><span class='mini bleu' ng-repeat="g in Data.modele.groups" ng-if="story.groups.indexOf(g.id)>=0">{{g.nom}}&nbsp;&nbsp;</span></div>
 			</li>
 		</ul>
 	</div>

@@ -1,4 +1,4 @@
-import db, ws, sys, os, json, glob, time, Image, modules
+import db, ws, sys, os, shutil, json, glob, time, Image, modules
 from twisted.internet import task
 from twisted.internet import reactor
 import numpy as np
@@ -56,7 +56,7 @@ def build_story(dbentries,iduser):
 			if os.path.isfile(f):
 				basename=os.path.basename(f)
 				filename,ext=os.path.splitext(basename)
-				if ext in ['.mp3','.wav','.WAV','.MP3']:
+				if ext in ['.wav','.WAV']:
 					row['sons']['A']['file']['path']=f
 					row['sons']['A']['file']['filename']=basename
 					row['sons']['A']['file']['date']=os.path.getmtime(f)
@@ -67,7 +67,7 @@ def build_story(dbentries,iduser):
 			if os.path.isfile(f):
 				basename=os.path.basename(f)
 				filename,ext=os.path.splitext(basename)
-				if ext in ['.mp3','.wav','.WAV','.MP3']:
+				if ext in ['.wav','.WAV']:
 					row['sons']['B']['file']['path']=f
 					row['sons']['B']['file']['filename']=basename
 					row['sons']['B']['file']['date']=os.path.getmtime(f)
@@ -128,15 +128,22 @@ def build_header(dbentries,iduser):
 	row['gradient']="gradient/%s_%s_%s_%s.jpg" % (row['couleur'][0][1:],row['couleur'][1][1:],row['couleur'][2][1:],row['couleur'][3][1:])
 	return row
 def get_stories(iduser):
-	return db.connexion.runQuery("SELECT (SELECT count(*)+1 FROM stories WHERE date<t1.date AND statut=1) as num, '[' || Group_Concat(DISTINCT t2.id_acces) ||']' as groups, t1.id as id, t1.nom as nom, t1.pitch as pitch, t1.photos as photos, t1.couleur as couleur, t1.createdby as createdby, t1.creationdate as creationdate, t1.date as date, t1.modificationdate as modificationdate, t1.modifiedby as modifiedby, t1.statut as statut FROM stories as t1 left outer join acl as t2 on t2.id_ressource=t1.id AND t2.type_ressource='stories' AND t2.type_acces='group' WHERE ?=1 OR t1.createdby=? OR t1.id IN (SELECT id_ressource from acl where type_ressource='stories' AND type_acces='group' AND id_acces IN (select id_group from user_group where id_user=?)) group by t1.id ORDER BY t1.id ASC", (iduser,iduser,iduser)).addCallback(this.build_stories,iduser)
+	return db.connexion.runQuery("SELECT (SELECT count(*)+1 FROM stories WHERE date<t1.date AND statut=1) as num, '[' || Group_Concat(DISTINCT t2.id_acces) ||']' as groups, t1.id as id, t1.nom as nom, t1.pitch as pitch, t1.photos as photos, t1.couleur as couleur, t1.createdby as createdby, t1.creationdate as creationdate, t1.date as date, t1.modificationdate as modificationdate, t1.modifiedby as modifiedby, t1.statut as statut FROM stories as t1 left outer join acl as t2 on t2.id_ressource=t1.id AND t2.type_ressource='stories' AND t2.type_acces='group' WHERE ?=1 OR t1.createdby=? OR t1.id IN (SELECT id_ressource from acl where type_ressource='stories' AND type_acces='group' AND id_acces IN (select id_group from user_group where id_user=?)) group by t1.id ORDER BY t1.id DESC", (iduser,iduser,iduser)).addCallback(this.build_stories,iduser)
 def get_stories_group(idgroup,iduser):
-	return db.connexion.runQuery("SELECT (SELECT count(*)+1 FROM stories WHERE date<t1.date AND statut=1) as num, '[' || Group_Concat(DISTINCT t2.id_acces) ||']' as groups, t1.id as id, t1.nom as nom, t1.pitch as pitch, t1.photos as photos, t1.couleur as couleur, t1.createdby as createdby, t1.creationdate as creationdate, t1.date as date, t1.modificationdate as modificationdate, t1.modifiedby as modifiedby, t1.statut as statut FROM stories as t1 left outer join acl as t2 on t2.id_ressource=t1.id AND t2.type_ressource='stories' AND t2.type_acces='group' WHERE t2.id_acces=? AND (?=1 OR ? IN (select id_user from user_group where id_group=?)) group by t1.id ORDER BY t1.id ASC", (idgroup,iduser,iduser,idgroup)).addCallback(this.build_stories,iduser)
+	return db.connexion.runQuery("SELECT (SELECT count(*)+1 FROM stories WHERE date<t1.date AND statut=1) as num, '[' || Group_Concat(DISTINCT t2.id_acces) ||']' as groups, t1.id as id, t1.nom as nom, t1.pitch as pitch, t1.photos as photos, t1.couleur as couleur, t1.createdby as createdby, t1.creationdate as creationdate, t1.date as date, t1.modificationdate as modificationdate, t1.modifiedby as modifiedby, t1.statut as statut FROM stories as t1 left outer join acl as t2 on t2.id_ressource=t1.id AND t2.type_ressource='stories' AND t2.type_acces='group' WHERE t2.id_acces=? AND (?=1 OR ? IN (select id_user from user_group where id_group=?)) group by t1.id ORDER BY t1.date DESC", (idgroup,iduser,iduser,idgroup)).addCallback(this.build_stories_group,iduser)
 def get_stories_pub(iduser):
 	return db.connexion.runQuery("SELECT (SELECT count(*)+1 FROM stories WHERE date<t1.date AND statut=1) as num, id, nom, pitch, photos, couleur, createdby, creationdate, date, modificationdate, modifiedby, statut FROM stories as t1 WHERE t1.statut=1 ORDER BY num desc").addCallback(this.build_stories,iduser)
 def build_stories(dbentries,iduser):
 	stories=[]
 	for row in dbentries:
 		stories.append(this.build_header([row],iduser))
+	return stories
+def build_stories_group(dbentries,iduser):
+	stories=this.build_stories(dbentries,iduser)
+	i=len(stories)
+	for s in stories:
+		s['num']=i
+		i=i-1
 	return stories
 def do_touch_story(txn,idstory,iduser):
 	now=int(time.time()*1000.0)
@@ -220,16 +227,25 @@ def check_waveform(idstory):
 		if os.path.isfile(f):
 			basename=os.path.basename(f)
 			filename,ext=os.path.splitext(basename)
-			if ext in ['.mp3','.wav','.WAV','.MP3']:
+			if ext in ['.wav','.WAV']:
 				jsonfilename="%s.json" % f
 				if not os.path.isfile(jsonfilename):
 					try:
+						infos=sf.info(f)
+						if infos.subtype!='PCM_16':
+							print('##reencode %s to PCM_16##' % infos.subtype)
+							data, samplerate = sf.read(f)
+							fnew="%s_new.%s" % (f,ext)
+							sf.write(fnew, data, samplerate,'PCM_16')	
+							os.remove(f)
+							shutil.move(fnew, f)
 						infos=sf.info(f)
 						rms = [np.max(block)*0.9 for block in sf.blocks(f, blocksize=50000)]
 						d={'infos':{'channels':infos.channels, 'samplerate':infos.samplerate, 'duration':infos.duration, 'format':infos.format, 'subtype':infos.subtype}, 'peaks':rms}
 						jsonfile = open(jsonfilename, "w")
 						jsonfile.write(json.dumps(d))
 						print('waveform %s done !' % f)
+						ws.maj(['story/%s' % idstory],idstory,1)
 					except:
 						os.remove(f)
 	return "ok"

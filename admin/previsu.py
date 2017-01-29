@@ -47,7 +47,7 @@ class Previsu(Resource):
 		s.putChild('lib',File("public/lib", "application/javascript"))
 		s.putChild('css',File("public/css", "application/javascript"))
 		s.putChild('js',File("public/js", "application/javascript"))
-		s.putChild('img',File("public/img", "application/javascript"))
+		s.putChild('img',File("data/img", "application/javascript"))
 		s.putChild('files',File("data/files/story/%s" % (idstory), "application/javascript"))
 		return s
 	def render_GET(self, request):
@@ -62,7 +62,7 @@ class PrevisuGroup(Resource):
 		s.putChild('lib',File("public/lib", "application/javascript"))
 		s.putChild('css',File("public/css", "application/javascript"))
 		s.putChild('js',File("public/js", "application/javascript"))
-		s.putChild('img',File("public/img", "application/javascript"))
+		s.putChild('img',File("data/img", "application/javascript"))
 		s.putChild('story',Previsu(idgroup))
 		return s
 	def render_GET(self, request):
@@ -104,6 +104,10 @@ class Previsuid(Resource):
 	def _delayedRender(self, res, request):
 		if 'id' in res[0][1]:
 			ctx = {}
+			for i in range(len(res[1][1])):
+				if res[1][1][i]['id']==res[0][1]['id']:
+					del res[1][1][i]
+					break
 			ctx['idgroup'] = self.idgroup
 			ctx['story'] = res[0][1]
 			ctx['stories'] = res[1][1]

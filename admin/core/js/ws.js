@@ -11,9 +11,16 @@ myws.value('Data', {
 	locked:false,
 	logged:false
 });
-myws.factory('Link',['Data', '$websocket', '$window', '$http', '$location', function(Data, $websocket, $window, $http, $location) {
+myws.factory('Link',['Data', '$websocket', '$window', '$http', '$location', '$rootScope', function(Data, $websocket, $window, $http, $location, $rootScope) {
 	var link={};
-	
+	link.subscribe=function(scope, callback) {
+            var handler = $rootScope.$on('link-model-change', callback);
+            scope.$on('$destroy', handler);
+        };
+        link.notify=function(data) {
+            $rootScope.$emit('link-model-change',data);
+        }
+
 	var loc = $window.location, new_uri, ws;
 	if (loc.protocol === "https:") {
 		new_uri = "wss:";
@@ -27,10 +34,13 @@ myws.factory('Link',['Data', '$websocket', '$window', '$http', '$location', func
 		var res = JSON.parse(event.data);
 		//console.log('message: ', res);
 		if (res.type=="modele") {
+			var o=angular.copy(Data.modele);
 			angular.forEach(res.collection, function(v,k){
 				Data.modele[k]=v;
 				Data.modeleSrv[k]=angular.copy(v);
 			});
+			var n=angular.copy(Data.modele);
+			link.notify({o:o,n:n});
 		}
 		if (res.type=="logout") {
 			$window.location="/admin" + $location.url();

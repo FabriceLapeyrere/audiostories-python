@@ -200,3 +200,5 @@ hr {border-color:#666;}
 }
 .pgauche.on-drag-hover img, .pdroite.on-drag-hover img {opacity:0.5;}
 .pgauche.on-drag-hover, .pdroite.on-drag-hover {background-color:#AAA;}
+.bas-droite {position:absolute;bottom:2px;right:5px;}
+.bleu {color:#428bca;}
