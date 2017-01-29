@@ -23,7 +23,8 @@
 <div id="main">
 <div class='mask color'></div>
 <div class="col-xs-120 header">
-	<a href="/">
+	{% if idgroup==0 %}<a href="">{% endif %}
+	{% if idgroup>0 %}<a href="/admin/previsu_group/{{idgroup}}">{% endif %}
 	<div class="col-xs-60 col-xs-offset-30 col-sm-30 col-sm-offset-0 col-md-25 col-lg-20">
 		<img src="{{story.id}}/img/logo2.png" class="img-responsive"/>
 	</div>
@@ -93,9 +94,14 @@
 </div>
 <div class="col-xs-120 col-lg-80 col-lg-offset-20 egalement">
 {% for s in stories %}
-	<div class="col-xs-120 col-md-40">
+	{% if loop.index%3==1 %}<div class='visible-md clearfix'></div>{% endif %}
+	{% if loop.index%3==1 %}<div class='visible-lg clearfix'></div>{% endif %}
+	{% if loop.index%2==1 %}<div class='visible-sm clearfix'></div>{% endif %}
+	<div class="col-xs-120 col-sm-60 col-md-40">
 		<div class="story-small">
-			<a class="astory" href="/admin/previsu/{{s.id}}">
+	{% if idgroup==0 %}<a class="astory" href="/admin/previsu/{{s.id}}">{% endif %}
+	{% if idgroup>0 %}<a class="astory" href="/admin/previsu_group/{{idgroup}}/story/{{s.id}}">{% endif %}
+			
 			{% if s.une %}{{s.une.petit|html_image(s.id)}}{% endif %}
 			<div class="img-mask-p"></div>
 			</a>

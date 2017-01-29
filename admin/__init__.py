@@ -23,6 +23,7 @@ class Admin(object):
 		myroot.putChild("files", login.Protected(File("data/files", "application/javascript")))
 		myroot.putChild("ajax", login.Protected(ajax.Ajax()))
 		myroot.putChild("previsu", login.Protected(previsu.Previsu()))
+		myroot.putChild("previsu_group", login.Protected(previsu.PrevisuGroup()))
 		myroot.putChild("upload", login.Protected(upload.Upload()))
 		myroot.putChild(b"ws", WebSocketResource(ws.wsfactory))
 		myroot.putChild("partials", login.Protected(File("admin/partials", "application/javascript")))
