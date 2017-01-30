@@ -14,7 +14,7 @@
 			<p ng-if="Data.modele.usersall[Data.modele.myid].role==2"><toggle-switch model="Data.modele[key].statut" knob-label="publié" class='small'></toggle-switch></p>
 			<p ng-if="Data.modele.usersall[Data.modele.myid].role==1"><span ng-if="Data.modele[key].statut">Publié</span><span ng-if="!Data.modele[key].statut">Non Publié</span></p>
 			<p><a ng-if="Data.modele[key].statut" href="../story/{{Data.modele[key].id}}" target="_blank">voir en ligne</a><a ng-if="!Data.modele[key].statut" href="previsu/{{Data.modele[key].id}}" target="_blank">prévisualiser</a></p>
-			<p ng-repeat="g in Data.modele.groups" ng-if="Data.modele[key].groups.indexOf(g.id)>=0"><a href="previsu_group/{{g.id}}" target="_blank">présualiser les audiostories du groupe <b>{{g.nom}}</b></a></p>
+			<p ng-repeat="g in Data.modele.groups" ng-if="Data.modele[key].groups.indexOf(g.id)>=0"><a href="previsu_group/{{g.id}}" target="_blank">prévisualiser les audiostories du groupe <b>{{g.nom}}</b></a></p>
 			<div class="col-xs-12 clearfix inter"></div>
 			<div ng-if="Data.modele[key].createdby==Data.modele.myid || Data.modele.myid==1">
 			<label for="partages">Partages</label>
