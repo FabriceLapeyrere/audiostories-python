@@ -808,13 +808,13 @@ app.controller('modGroupCtl', ['$scope', '$http', '$location', '$routeParams', '
 		Link.del_verrou([$scope.key]);
 	});
 }]);
-app.controller('addConstanteCtl', ['$scope', '$http', '$location', '$routeParams', 'Data', function ($scope, $http, $location, $routeParams, Data) {
+app.controller('addConstanteCtl', ['$scope', '$http', '$location', '$routeParams', 'Data', 'Link', function ($scope, $http, $location, $routeParams, Data, Link) {
 	$scope.c={k:'',v:''}
-	$scope.mod=function(){
+	$scope.add=function(){
 		var data={
 			action:'addConstante',
 			params:{
-				id:$scope.c.k,
+				k:$scope.c.k,
 				v:$scope.c.v
 			}
 		};

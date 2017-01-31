@@ -10,6 +10,7 @@ import random, json, os
 import modules.stories
 import modules.pages
 import modules.constantes
+import selection
 
 env = Environment(loader=PackageLoader('public','templates'))
 def html_image_vide(taille):
@@ -147,6 +148,7 @@ class Public(object):
 		myroot = RootPage()
 		myroot.putChild("story", Story())
 		myroot.putChild("p", Page())
+		myroot.putChild("s", selection.SelectionGroup())
 		myroot.putChild('lib',File("public/lib", "application/javascript"))
 		myroot.putChild('css',File("public/css", "application/javascript"))
 		myroot.putChild('js',File("public/js", "application/javascript"))

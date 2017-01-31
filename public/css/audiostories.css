@@ -490,3 +490,4 @@ a.info:hover, a.info:active {
 	overflow:hidden;
 }
 .noticeko, .noticeok {display:none;}
+.header-home h3, .header h3 {margin:5px 0 0 0;color:#FFF;font-size:2em;}
