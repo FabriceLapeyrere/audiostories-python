@@ -90,6 +90,7 @@ class Storyid(Resource):
 	def render_GET(self, request):
 		ctx = {}
 		ctx['story'] = self.res[0][1]
+		ctx['story']['url']=request.getHeader('host')
 		for i in range(len(self.res[1][1])):
 			if self.res[1][1][i]['id']==self.res[0][1]['id']:
 				del self.res[1][1][i]

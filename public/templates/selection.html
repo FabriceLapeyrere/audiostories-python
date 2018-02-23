@@ -30,6 +30,7 @@
 		<h3>/ {{sel.display_name}}</h3>
 		</div>
 	</a>
+    <a class="pull-right info" href="#help" rel="modal:open"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
 </div>
 <div class="col-xs-120">
 	<div class="diaporama wrapperR2">
@@ -134,6 +135,25 @@
 	</div>
 	<div class="clearfix"></div>
 </div>
+</div>
+<div class="hidden readerinfos">La touche "espace" sert de bouton play, pause. Pour lancer la face A appuyer sur la touche "A". Pour lancer la face B appuyer sur la touche "B". Pour vous déplacer dans la piste audio appuyer sur les touches de 0 à 9. Pour lire le texte appuyez sur la touche "T". Pour les informations de navigation appuyez sur la touche "I". Pour retourner à l'accueil appuyer sur la touche "H".</div>
+<div class="hidden readertexte">Face A : {{story.sons.A.titre}}. Face B : {{story.sons.B.titre}}. {{story.infos.texte}} {% if story.infos.auteurs %}Réalisation : {{story.infos.auteurs}}.{% endif %}</div>
+<div class="readeronly status" aria-live="assertive" aria-atomic="true"></div>
+<div id="help" class="jqModal">
+<p>Cliquer sur les photos pour les faire défiler.</p>
+<p>Cliquer sur <span class="glyphicon glyphicon-play" aria-hidden="true"></span> pour écouter les sons (face A et face B)</p>
+<p>Ne pas oublier d'allumer vos enceintes.</p>
+<p>Bon visionnage.</p>
+<hr/>
+<p><small>Raccourcis clavier :</small></p>
+<table style="text-align:center;font-size:0.8em;width:100%;">
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;" width="50%">Flèche droite</td><td width="50%">Photos suivantes</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">Flèche gauche</td><td>Photos précédentes</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">A</td><td>Écouter la face A</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">B</td><td>Écouter la face B</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">Espace</td><td>Play / Pause</td></tr>
+	<tr style="border:1px solid #FFF;"><td style="padding:3px;">Touches de 0 à 9</td><td>Naviguer dans la piste audio</td></tr>
+</table>
 </div>
 
 {% if story.sons.A.file.filename %}
